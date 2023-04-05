@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: profile-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: profile
+  template:
+    metadata:
+      labels:
+        app: profile
+    spec:
+      containers:
+        - name: profile
+          image: diaa14/profile
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: profile-serv
+spec:
+  selector:
+    app: profile
+  ports:
+    - name: profile
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
