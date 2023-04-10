@@ -19,6 +19,8 @@ class _AuthState extends State<Auth> {
 
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
     return Scaffold(
       body: Container(
         height: double.infinity,
@@ -36,6 +38,13 @@ class _AuthState extends State<Auth> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Image.asset(
+                  'assets/images/idli_illustration.png',
+                  width: width / (1.3),
+                ),
+              ),
               signUp
                   ? SignIn(toggleView: toggleView)
                   : SignUp(toggleView: toggleView),

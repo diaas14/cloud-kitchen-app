@@ -8,7 +8,8 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
 String? apiUrl = dotenv.env['DEV_API_URL'];
 final storage = FlutterSecureStorage();
 
-Future<String> registerWithEmailPassword(String email, String password) async {
+Future<String> registerWithEmailPassword(
+    String name, String email, String password) async {
   try {
     UserCredential credential = await _auth.createUserWithEmailAndPassword(
       email: email,
@@ -20,6 +21,7 @@ Future<String> registerWithEmailPassword(String email, String password) async {
       Uri.parse('${apiUrl}api/profile/'),
       body: {
         'userId': user?.uid,
+        'name': name,
         'email': user?.email,
       },
       headers: {
@@ -73,7 +75,9 @@ Future<String> signInWithGoogle() async {
         Uri.parse('${apiUrl}api/profile/'),
         body: {
           'userId': user?.uid,
+          'name': googleUser?.displayName,
           'email': user?.email,
+          'photoUrl': googleUser?.photoUrl
         },
         headers: {
           'Authorization': 'Bearer $token',

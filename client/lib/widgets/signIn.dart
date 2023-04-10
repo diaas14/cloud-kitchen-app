@@ -31,44 +31,37 @@ class _SignInState extends State<SignIn> {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
-    return Form(
-      key: _formKey,
+    return Container(
+      padding: EdgeInsets.all(32.0),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           Align(
             alignment: Alignment.centerLeft,
-            child: Image.asset(
-              'assets/images/idli_illustration.png',
-              width: width / (1.3),
+            child: Text(
+              'We meet again!',
+              style: TextStyle(
+                fontSize: 34,
+                fontWeight: FontWeight.w300,
+              ),
             ),
           ),
-          Container(
-            padding: EdgeInsets.all(32.0),
-            width: double.infinity,
+          SizedBox(height: 12),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              'You have been missed',
+              style: TextStyle(
+                fontSize: 16,
+              ),
+            ),
+          ),
+          SizedBox(height: 24),
+          Form(
+            key: _formKey,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'We meet again!',
-                    style: TextStyle(
-                      fontSize: 34,
-                      fontWeight: FontWeight.w300,
-                    ),
-                  ),
-                ),
-                SizedBox(height: 12),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'You have been missed',
-                    style: TextStyle(
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-                SizedBox(height: 24),
                 Container(
                   margin: EdgeInsets.fromLTRB(0, 0, 0, 12),
                   padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
