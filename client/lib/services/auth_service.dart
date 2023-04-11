@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -77,7 +79,7 @@ Future<String> signInWithGoogle() async {
           'userId': user?.uid,
           'name': googleUser?.displayName,
           'email': user?.email,
-          'photoUrl': googleUser?.photoUrl
+          if (googleUser?.photoUrl != null) 'photoUrl': googleUser?.photoUrl,
         },
         headers: {
           'Authorization': 'Bearer $token',
@@ -90,4 +92,17 @@ Future<String> signInWithGoogle() async {
   } catch (e) {
     return e.toString();
   }
+}
+
+Future<Map<String, dynamic>> fetchProfileData() async {
+  if (_auth.currentUser != null) {
+    final uid = _auth.currentUser?.uid;
+    final res = await http.get(Uri.parse('${apiUrl}api/profile/${uid}'));
+    if (res.statusCode == 200) {
+      return json.decode(res.body) as Map<String, dynamic>;
+    } else {
+      throw Exception('Failed to load profile data.');
+    }
+  }
+  throw Exception('No user found.');
 }

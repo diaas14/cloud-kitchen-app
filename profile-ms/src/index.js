@@ -13,7 +13,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const serviceAccount = `${__dirname}/serviceAccountKey.json`;
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  databaseURL: "https://cloud-kitchen-4d39e.firebaseio.com",
+  databaseURL: process.env.DB_URL,
 });
 
 app.use("/api/profile", usersRoute);

@@ -170,7 +170,7 @@ class _SignUpState extends State<SignUp> {
                         return 'Enter valid Password';
                       }
                       if (value.trim() != _passwordController.text.trim()) {
-                        return 'Passwords does not match';
+                        return 'Passwords do not match';
                       }
                       return null;
                     }),
