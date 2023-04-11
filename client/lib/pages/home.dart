@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:client/themes.dart';
 import 'package:client/widgets/profile.dart';
@@ -33,10 +32,13 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Kairuchi'),
         centerTitle: true,
         backgroundColor: Color.fromARGB(255, 243, 182, 132),
         elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () => Navigator.of(context).maybePop(),
+        ),
       ),
       body: _screens.elementAt(_selectedItem),
       bottomNavigationBar: BottomNavigationBar(
@@ -62,6 +64,7 @@ class _HomeState extends State<Home> {
         currentIndex: _selectedItem,
         selectedItemColor: Color.fromARGB(255, 243, 182, 132),
         onTap: _onItemTapped,
+        type: BottomNavigationBarType.fixed,
       ),
     );
   }

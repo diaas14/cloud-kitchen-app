@@ -29,10 +29,44 @@ class _ProfileState extends State<Profile> {
           return Container(
             child: Column(
               children: [
-                Text(profile['name']),
-                Text(profile['email']),
-                if (profile.containsKey("photoUrl"))
-                  Image.network(profile["photoUrl"]),
+                Card(
+                  child: Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: CircleAvatar(
+                          radius: 60,
+                          child: profile.containsKey("photoUrl")
+                              ? ClipOval(
+                                  child: Image.network(
+                                    profile["photoUrl"],
+                                    fit: BoxFit.cover,
+                                  ),
+                                )
+                              : IconTheme(
+                                  data: IconThemeData(
+                                    size: 55,
+                                  ),
+                                  child: Icon(
+                                    Icons.person,
+                                  ),
+                                ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(profile['name'],
+                                style: TextStyle(fontSize: 24)),
+                            Text(profile['email']),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                ),
                 ElevatedButton(
                   child: Text("Logout"),
                   onPressed: () async {
@@ -41,7 +75,7 @@ class _ProfileState extends State<Profile> {
                     }
                     FirebaseAuth.instance.signOut();
                   },
-                )
+                ),
               ],
             ),
           );
