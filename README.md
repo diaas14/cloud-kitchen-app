@@ -16,7 +16,7 @@ git clone https://github.com/diaas14/cloud-kitchen-app.git
 cd cloud-kitchen-app
 ```
 
-## Note to Contributors
+## Note to Collaborators
 
 1. Clone repository
 
@@ -24,23 +24,31 @@ cd cloud-kitchen-app
 # Clone this repository to your local machine
 git clone https://github.com/diaas14/cloud-kitchen-app.git
 ```
+2. Install Node, Flutter, Docker and Kubernetes if you haven't already.
 
-2. Switch to dev branch
+3. To run the Node.js backend microservices - 
+  1. Install Skaffold by following the instructions on the Skaffold website.
+  2. Make sure Docker and Kubernetes is up and running
+  2. In your terminal, navigate to the root directory of the project.
+  3. Run skaffold dev to build and deploy the microservices and React app server to your local Kubernetes cluster.
+  4. Wait for Skaffold to finish deploying the microservices.
+  
+4. To run flutter app - 
+  1. Navigate to ./client directory.
+  2. Install dependencies by running ```bash flutter pub get```
+  3. Connect a mobile device that is on the same network.
+  4. Run the app by running ```bash flutter run```
 
-```bash
-git checkout dev
-```
-
-3. Pull changes to your local repository before you make any changes
+5. Pull changes to your local repository before you make any changes
 
 ```bash
 git pull
 ```
 
-4. Push your changes to the dev branch
+6. Push your changes 
 
 ```bash
-git push origin dev
+git push origin main
 ```
 
-5. Raise a Pull Request before merging branches
+7. Raise a Pull Request before merging branches
