@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:client/themes.dart';
 import 'package:client/widgets/profile.dart';
+import 'package:client/widgets/mapScreen.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -14,9 +15,7 @@ class _HomeState extends State<Home> {
   int _selectedItem = 0;
 
   final _screens = <Widget>[
-    Text("Home"),
-    Text("Menu"),
-    Text("Map"),
+    MapScreen(),
     Profile(),
   ];
 
@@ -43,14 +42,14 @@ class _HomeState extends State<Home> {
       body: _screens.elementAt(_selectedItem),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: "Home",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.menu_book_outlined),
-            label: "Menu",
-          ),
+          // BottomNavigationBarItem(
+          //   icon: Icon(Icons.home),
+          //   label: "Home",
+          // ),
+          // BottomNavigationBarItem(
+          //   icon: Icon(Icons.menu_book_outlined),
+          //   label: "Menu",
+          // ),
           BottomNavigationBarItem(
             icon: Icon(Icons.map),
             label: "Map",

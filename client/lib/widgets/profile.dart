@@ -82,7 +82,9 @@ class _ProfileState extends State<Profile> {
         } else if (snapshot.hasError) {
           return Text('Error loading profile data');
         } else {
-          return CircularProgressIndicator();
+          return Center(
+            child: CircularProgressIndicator(),
+          );
         }
       },
     );
