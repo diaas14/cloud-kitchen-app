@@ -6,7 +6,6 @@ class UserController {
     try {
       const newUserRef = admin.firestore().collection("users").doc(userId);
       await newUserRef.set({
-        userId,
         email,
         name,
         ...(photoUrl && { photoUrl }),

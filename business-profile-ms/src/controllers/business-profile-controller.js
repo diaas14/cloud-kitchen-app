@@ -6,7 +6,6 @@ class BusinessProfileController {
     try {
       const newUserRef = admin.firestore().collection("businesses").doc(userId);
       await newUserRef.set({
-        userId,
         email,
         name,
         ...(photoUrl && { photoUrl }),
@@ -25,7 +24,7 @@ class BusinessProfileController {
     try {
       const userDoc = await admin
         .firestore()
-        .collection("users")
+        .collection("businesses")
         .doc(userId)
         .get();
       if (!userDoc.exists) {
