@@ -13,7 +13,7 @@ class Auth extends StatefulWidget {
 class _AuthState extends State<Auth> {
   bool signUp = true;
 
-  void toggleView() {
+  void _toggleView() {
     setState(() => signUp = !signUp);
   }
 
@@ -46,8 +46,8 @@ class _AuthState extends State<Auth> {
                 ),
               ),
               signUp
-                  ? SignIn(toggleView: toggleView)
-                  : SignUp(toggleView: toggleView),
+                  ? SignIn(toggleView: _toggleView)
+                  : SignUp(toggleView: _toggleView),
               GoogleAuthButton(),
             ],
           ),

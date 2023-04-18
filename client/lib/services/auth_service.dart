@@ -92,16 +92,3 @@ Future<String> signInWithGoogle() async {
     return e.toString();
   }
 }
-
-Future<Map<String, dynamic>> fetchProfileData() async {
-  if (_auth.currentUser != null) {
-    final uid = _auth.currentUser?.uid;
-    final res = await http.get(Uri.parse('${apiUrl}api/profile/${uid}'));
-    if (res.statusCode == 200) {
-      return json.decode(res.body) as Map<String, dynamic>;
-    } else {
-      throw Exception('Failed to load profile data.');
-    }
-  }
-  throw Exception('No user found.');
-}

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:client/themes.dart';
 import 'package:client/widgets/profile.dart';
-import 'package:client/widgets/mapScreen.dart';
+import 'package:client/widgets/mapInterface.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -14,10 +12,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   int _selectedItem = 0;
 
-  final _screens = <Widget>[
-    MapScreen(),
-    Profile(),
-  ];
+  final _screens = <Widget>[const MapInterface(), const Profile()];
 
   void _onItemTapped(int idx) {
     setState(
@@ -32,24 +27,12 @@ class _HomeState extends State<Home> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        backgroundColor: Color.fromARGB(255, 243, 182, 132),
+        backgroundColor: Theme.of(context).primaryColor,
         elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).maybePop(),
-        ),
       ),
       body: _screens.elementAt(_selectedItem),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
-          // BottomNavigationBarItem(
-          //   icon: Icon(Icons.home),
-          //   label: "Home",
-          // ),
-          // BottomNavigationBarItem(
-          //   icon: Icon(Icons.menu_book_outlined),
-          //   label: "Menu",
-          // ),
           BottomNavigationBarItem(
             icon: Icon(Icons.map),
             label: "Map",
@@ -59,9 +42,9 @@ class _HomeState extends State<Home> {
             label: "Profile",
           ),
         ],
-        unselectedItemColor: Color.fromARGB(255, 32, 97, 75),
+        unselectedItemColor: Theme.of(context).backgroundColor,
         currentIndex: _selectedItem,
-        selectedItemColor: Color.fromARGB(255, 243, 182, 132),
+        selectedItemColor: Theme.of(context).primaryColor,
         onTap: _onItemTapped,
         type: BottomNavigationBarType.fixed,
       ),

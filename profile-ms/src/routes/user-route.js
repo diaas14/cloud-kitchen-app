@@ -7,6 +7,8 @@ const router = express.Router();
 const userController = new UserController();
 
 // router.post("/", verifyToken, userController.createUser);
+router.post("/:userId", userController.updateUser);
+
 router.post("/", userController.createUser);
 
 router.get("/:userId", userController.fetchUser);

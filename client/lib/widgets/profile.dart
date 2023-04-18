@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:client/services/auth_service.dart';
+import 'package:client/services/profile_service.dart';
+import 'package:client/pages/editProfile.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -61,9 +62,32 @@ class _ProfileState extends State<Profile> {
                             Text(profile['name'],
                                 style: TextStyle(fontSize: 24)),
                             Text(profile['email']),
+                            ElevatedButton(
+                              child: RichText(
+                                text: TextSpan(
+                                  children: const [
+                                    TextSpan(text: "Edit "),
+                                    WidgetSpan(
+                                      child: Icon(
+                                        Icons.edit,
+                                        size: 16,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          EditProfile(profile: profile)),
+                                );
+                              },
+                            ),
                           ],
                         ),
-                      )
+                      ),
                     ],
                   ),
                 ),

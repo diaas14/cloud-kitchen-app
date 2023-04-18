@@ -3,14 +3,14 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:client/services/location_service.dart';
 
-class MapScreen extends StatefulWidget {
-  const MapScreen({super.key});
+class MapInterface extends StatefulWidget {
+  const MapInterface({super.key});
 
   @override
-  State<MapScreen> createState() => _MapScreenState();
+  State<MapInterface> createState() => _MapInterfaceState();
 }
 
-class _MapScreenState extends State<MapScreen> {
+class _MapInterfaceState extends State<MapInterface> {
   late Future<Placemark> _currentPlace;
 
   @override

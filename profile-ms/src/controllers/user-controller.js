@@ -36,6 +36,20 @@ class UserController {
       res.status(500).send(err);
     }
   }
+
+  async updateUser(req, res) {
+    const userId = req.params.userId;
+    try {
+      const userDocRef = admin.firestore().collection("users").doc(userId);
+      if (!(await userDocRef.get()).exists) {
+        res.status(404).json({ msg: "User not found" });
+      }
+      await userDocRef.update(req.body);
+      res.status(200).json("User successfully updated.");
+    } catch (err) {
+      res.status(500).send(err);
+    }
+  }
 }
 
 module.exports = UserController;
