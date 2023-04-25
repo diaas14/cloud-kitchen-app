@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:client/services/profile_service.dart';
+import 'package:image_picker/image_picker.dart';
 
 class EditProfile extends StatefulWidget {
   final Map<String, dynamic> profile;
@@ -16,6 +17,19 @@ class _EditProfileState extends State<EditProfile> {
   final TextEditingController _emailController = TextEditingController();
   bool _isNameChanged = false;
   bool _isEmailChanged = false;
+  XFile? _imageFile;
+
+  Future _pickImage() async {
+    try {
+      final pickedFile =
+          await ImagePicker().pickImage(source: ImageSource.gallery);
+      setState(() {
+        _imageFile = pickedFile;
+      });
+    } catch (e) {
+      Fluttertoast.showToast(msg: "Image picker error $e");
+    }
+  }
 
   _submitForm() async {
     final data = <String, dynamic>{};
@@ -28,8 +42,8 @@ class _EditProfileState extends State<EditProfile> {
       data['email'] = _emailController.text.trim();
     }
 
-    if (data.isNotEmpty) {
-      final res = await updateProfile(data);
+    if (data.isNotEmpty || _imageFile != null) {
+      final res = await updateProfile(data, _imageFile);
       Fluttertoast.showToast(msg: res);
     }
   }
@@ -45,22 +59,32 @@ class _EditProfileState extends State<EditProfile> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        title: Text("Edit Profile"),
         centerTitle: true,
         backgroundColor: Theme.of(context).primaryColor,
         elevation: 0,
       ),
       body: Container(
+        padding: EdgeInsets.all(15),
         child: Column(
           children: [
             Stack(
+              alignment: Alignment.center,
               children: [
                 CircleAvatar(
                   radius: 60,
                   child: widget.profile.containsKey("photoUrl")
                       ? ClipOval(
-                          child: Image.network(
-                            widget.profile["photoUrl"],
-                            fit: BoxFit.cover,
+                          child: ColorFiltered(
+                            colorFilter: ColorFilter.mode(
+                              Colors.black
+                                  .withOpacity(0.5), // Adjust opacity as needed
+                              BlendMode.darken,
+                            ),
+                            child: Image.network(
+                              widget.profile["photoUrl"],
+                              fit: BoxFit.cover,
+                            ),
                           ),
                         )
                       : IconTheme(
@@ -71,6 +95,14 @@ class _EditProfileState extends State<EditProfile> {
                             Icons.person,
                           ),
                         ),
+                ),
+                IconButton(
+                  icon: Icon(
+                    Icons.add_a_photo,
+                    color: Colors.white,
+                    size: 35,
+                  ),
+                  onPressed: _pickImage,
                 ),
               ],
             ),
@@ -133,7 +165,9 @@ class _EditProfileState extends State<EditProfile> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).primaryColor,
               ),
-              onPressed: _isNameChanged || _isEmailChanged ? _submitForm : null,
+              onPressed: _imageFile != null || _isNameChanged || _isEmailChanged
+                  ? _submitForm
+                  : null,
               child: Text('Save Changes'),
             ),
           ],

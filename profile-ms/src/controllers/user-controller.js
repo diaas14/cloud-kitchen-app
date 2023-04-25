@@ -12,7 +12,6 @@ class UserController {
       });
       res.status(201).json({ msg: "Registration complete" });
     } catch (err) {
-      console.log(err);
       res.status(500).send(err);
     }
   }
@@ -32,7 +31,6 @@ class UserController {
         res.status(200).json(userData);
       }
     } catch (err) {
-      console.log(err);
       res.status(500).send(err);
     }
   }
@@ -44,8 +42,42 @@ class UserController {
       if (!(await userDocRef.get()).exists) {
         res.status(404).json({ msg: "User not found" });
       }
-      await userDocRef.update(req.body);
-      res.status(200).json("User successfully updated.");
+      let imageURL = null;
+      const file = req.files[0];
+      if (file) {
+        const bucket = admin.storage().bucket();
+        const fileName = `${Date.now()}_${file.originalname}`;
+        const fileUpload = bucket.file(fileName);
+
+        const blobStream = fileUpload.createWriteStream({
+          metadata: {
+            contentType: file.mimetype,
+          },
+        });
+
+        blobStream.on("error", (error) => {
+          res.status(500).send({ error: error });
+        });
+
+        blobStream.on("finish", () => {
+          fileUpload.makePublic((err) => {
+            if (err) {
+              return res.status(500).send(err);
+            }
+            const publicUrl = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
+            imageURL = publicUrl;
+            userDocRef.update({ photoUrl: imageURL, ...req.body });
+            return res.status(200).json({
+              message: "User successfully updated.",
+            });
+          });
+        });
+
+        blobStream.end(file.buffer);
+      } else {
+        await userDocRef.update(req.body);
+        res.status(200).json("User successfully updated.");
+      }
     } catch (err) {
       res.status(500).send(err);
     }

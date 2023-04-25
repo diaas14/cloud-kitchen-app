@@ -3,7 +3,8 @@ const admin = require("firebase-admin");
 async function verifyToken(req, res, next) {
   const authHeader = req.headers.authorization;
 
-  if (!authHeader || !authHeader.startsWith("Bearer")) {
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    console.log("Unauthorized: No token provided");
     return res.status(401).send("Unauthorized: No token provided");
   }
 

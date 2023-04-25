@@ -1,13 +1,11 @@
 import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 String? apiUrl = dotenv.env['DEV_API_URL'];
-final storage = FlutterSecureStorage();
 
 Future<String> registerWithEmailPassword(
     String name, String email, String password) async {
@@ -44,7 +42,6 @@ Future<String> signInWithEmailPassword(String email, String password) async {
       password: password,
     );
     final token = await credential.user?.getIdToken();
-    await storage.write(key: 'token', value: token);
     return 'success';
   } on FirebaseAuthException catch (e) {
     return e.code;
@@ -86,7 +83,6 @@ Future<String> signInWithGoogle() async {
       );
       if (response.statusCode == 201) return response.body;
     }
-    await storage.write(key: 'token', value: token);
     return 'success';
   } catch (e) {
     return e.toString();
