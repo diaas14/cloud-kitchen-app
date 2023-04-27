@@ -80,7 +80,7 @@ class _SignInState extends State<SignIn> {
                       return null;
                     }),
                     decoration: InputDecoration(
-                      border: UnderlineInputBorder(),
+                      border: InputBorder.none,
                       labelText: 'Email',
                       hintText: 'Enter your Email',
                     ),
@@ -107,7 +107,7 @@ class _SignInState extends State<SignIn> {
                     }),
                     obscureText: _obsureText,
                     decoration: InputDecoration(
-                      border: UnderlineInputBorder(),
+                      border: InputBorder.none,
                       labelText: 'Password',
                       hintText: 'Enter your Password',
                       suffixIcon: IconButton(
@@ -143,7 +143,7 @@ class _SignInState extends State<SignIn> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Text(
-                      "Don't have an account?",
+                      "Don't have an account? ",
                       style: TextStyle(color: Colors.grey),
                     ),
                     GestureDetector(

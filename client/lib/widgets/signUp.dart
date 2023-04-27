@@ -83,7 +83,7 @@ class _SignUpState extends State<SignUp> {
                       return null;
                     }),
                     decoration: InputDecoration(
-                      border: UnderlineInputBorder(),
+                      border: InputBorder.none,
                       labelText: 'Name',
                       hintText: 'Enter your Name',
                     ),
@@ -109,7 +109,7 @@ class _SignUpState extends State<SignUp> {
                       return null;
                     }),
                     decoration: InputDecoration(
-                      border: UnderlineInputBorder(),
+                      border: InputBorder.none,
                       labelText: 'Email',
                       hintText: 'Enter your Email',
                     ),
@@ -136,7 +136,7 @@ class _SignUpState extends State<SignUp> {
                     }),
                     obscureText: _obsureText,
                     decoration: InputDecoration(
-                      border: UnderlineInputBorder(),
+                      border: InputBorder.none,
                       labelText: 'Password',
                       hintText: 'Enter your Password',
                       suffixIcon: IconButton(
@@ -176,7 +176,7 @@ class _SignUpState extends State<SignUp> {
                     }),
                     obscureText: _obsureConfirmText,
                     decoration: InputDecoration(
-                      border: UnderlineInputBorder(),
+                      border: InputBorder.none,
                       labelText: 'Confirm Password',
                       hintText: 'Enter your Password',
                       suffixIcon: IconButton(
@@ -202,7 +202,7 @@ class _SignUpState extends State<SignUp> {
                     onPressed: () {
                       _signUp(context);
                     },
-                    child: Text('Sign In'),
+                    child: Text('Sign Up'),
                   ),
                 ),
                 SizedBox(
@@ -212,7 +212,7 @@ class _SignUpState extends State<SignUp> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Text(
-                      "Have an account already?",
+                      "Have an account already? ",
                       style: TextStyle(color: Colors.grey),
                     ),
                     GestureDetector(
