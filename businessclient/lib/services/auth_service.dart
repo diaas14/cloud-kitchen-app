@@ -84,9 +84,9 @@ Future<String> signInWithGoogle() async {
           'Authorization': 'Bearer $token',
         },
       );
-      if (response.statusCode == 201) return response.body;
+      if (response.statusCode == 201) return "registration complete";
     }
-    return 'success';
+    return 'login success';
   } catch (e) {
     return e.toString();
   }

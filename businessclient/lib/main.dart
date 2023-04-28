@@ -4,7 +4,8 @@ import 'package:businessclient/themes.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:businessclient/pages/auth.dart';
 import 'package:businessclient/firebase_options.dart';
-import 'package:businessclient/pages/foodServiceDetails.dart';
+import 'package:businessclient/pages/home.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,8 +23,22 @@ void main() async {
   }
   runApp(
     MaterialApp(
+      initialRoute: '/',
       theme: themeData,
-      home: Auth(),
+      home: FutureBuilder<User?>(
+        future: FirebaseAuth.instance.authStateChanges().first,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            final User? user = snapshot.data;
+            return user == null ? Auth() : Home();
+          }
+          return Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        },
+      ),
     ),
   );
 }

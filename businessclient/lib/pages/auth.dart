@@ -4,7 +4,7 @@ import 'package:businessclient/widgets/signIn.dart';
 import 'package:businessclient/widgets/googleAuthButton.dart';
 
 class Auth extends StatefulWidget {
-  const Auth({super.key});
+  const Auth({Key? key}) : super(key: key);
 
   @override
   State<Auth> createState() => _AuthState();

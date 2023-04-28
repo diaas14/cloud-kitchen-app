@@ -6,6 +6,8 @@ const router = express.Router();
 
 const businessProfileController = new BusinessProfileController();
 
+router.post("/:userId", verifyToken, businessProfileController.updateProfile);
+
 router.post("/", verifyToken, businessProfileController.createProfile);
 
 module.exports = router;

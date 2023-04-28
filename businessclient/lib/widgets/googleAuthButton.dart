@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:businessclient/services/auth_service.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:businessclient/pages/foodServiceDetails.dart';
+import 'package:businessclient/pages/home.dart';
+import 'package:businessclient/pages/auth.dart';
 
 class GoogleAuthButton extends StatefulWidget {
   const GoogleAuthButton({super.key});
@@ -15,6 +18,17 @@ class _GoogleAuthButtonState extends State<GoogleAuthButton> {
     Fluttertoast.showToast(
       msg: result,
     );
+    if (mounted) {
+      Navigator.push(context, MaterialPageRoute(builder: (context) {
+        if (result == 'registration complete') {
+          return FoodServiceDetails();
+        } else if (result == 'login success') {
+          return Home();
+        } else {
+          return Auth();
+        }
+      }));
+    }
   }
 
   @override

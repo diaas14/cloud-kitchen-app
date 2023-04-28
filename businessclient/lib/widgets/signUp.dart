@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:businessclient/services/auth_service.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:businessclient/pages/foodServiceDetails.dart';
 
 class SignUp extends StatefulWidget {
   final Function toggleView;
@@ -32,6 +33,12 @@ class _SignUpState extends State<SignUp> {
       Fluttertoast.showToast(
         msg: result,
       );
+      if (result == 'success' && mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => FoodServiceDetails()),
+        );
+      }
     }
   }
 
