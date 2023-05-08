@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:client/widgets/profile.dart';
 import 'package:client/widgets/mapInterface.dart';
+import 'package:client/widgets/foodProviders.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -12,7 +13,11 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   int _selectedItem = 0;
 
-  final _screens = <Widget>[const MapInterface(), const Profile()];
+  final _screens = <Widget>[
+    const MapInterface(),
+    const Profile(),
+    const FoodProviders()
+  ];
 
   void _onItemTapped(int idx) {
     setState(
@@ -26,8 +31,9 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        title: Text("Home"),
         centerTitle: true,
-        backgroundColor: Theme.of(context).primaryColor,
+        backgroundColor: Color.fromARGB(255, 36, 151, 164),
         elevation: 0,
       ),
       body: _screens.elementAt(_selectedItem),
@@ -41,10 +47,14 @@ class _HomeState extends State<Home> {
             icon: Icon(Icons.person),
             label: "Profile",
           ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: "Food Providers",
+          ),
         ],
-        unselectedItemColor: Theme.of(context).backgroundColor,
+        unselectedItemColor: Color.fromARGB(255, 21, 120, 131),
         currentIndex: _selectedItem,
-        selectedItemColor: Theme.of(context).primaryColor,
+        selectedItemColor: Color.fromARGB(255, 21, 120, 131),
         onTap: _onItemTapped,
         type: BottomNavigationBarType.fixed,
       ),

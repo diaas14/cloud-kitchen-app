@@ -17,7 +17,9 @@ class _ProfileState extends State<Profile> {
   @override
   void initState() {
     super.initState();
-    _profileData = fetchProfileData();
+    setState(() {
+      _profileData = fetchProfileData();
+    });
   }
 
   @override

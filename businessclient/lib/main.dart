@@ -23,6 +23,7 @@ void main() async {
   }
   runApp(
     MaterialApp(
+      debugShowCheckedModeBanner: false,
       initialRoute: '/',
       theme: themeData,
       home: FutureBuilder<User?>(

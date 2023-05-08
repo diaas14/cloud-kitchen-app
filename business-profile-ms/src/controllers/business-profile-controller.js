@@ -38,6 +38,39 @@ class BusinessProfileController {
         .send({ err: "An error occurred while updating the profile" });
     }
   }
+
+  async fetchProfile(req, res) {
+    const userId = req.params.userId;
+    try {
+      const userDoc = await admin
+        .firestore()
+        .collection("businesses")
+        .doc(userId)
+        .get();
+      if (!userDoc.exists) {
+        res.status(404).json({ msg: "User not found" });
+      } else {
+        const userData = userDoc.data();
+        res.status(200).json(userData);
+      }
+    } catch (err) {
+      res.status(500).send(err);
+    }
+  }
+
+  async fetchAllProfiles(req, res) {
+    console.log("Request receieved");
+    try {
+      const snapshot = await admin.firestore().collection("businesses").get();
+      const profiles = [];
+      snapshot.forEach((doc) => {
+        profiles.push(doc.data());
+      });
+      res.status(200).json(profiles);
+    } catch (err) {
+      res.status(500).send(err);
+    }
+  }
 }
 
 module.exports = BusinessProfileController;

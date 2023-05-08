@@ -22,6 +22,7 @@ Future<Map<String, dynamic>> fetchProfileData() async {
     if (res.statusCode == 200) {
       return json.decode(res.body) as Map<String, dynamic>;
     } else {
+      print(res.body);
       throw Exception('Failed to load profile data.');
     }
   }
@@ -62,7 +63,7 @@ Future<String> updateProfile(
   var response = await request.send();
 
   if (response.statusCode == 200) {
-    return 'Data and image uploaded successfully';
+    return 'success';
   } else {
     return 'Failed to upload data and image. Error: ${response.statusCode}';
   }

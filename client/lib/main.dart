@@ -26,6 +26,7 @@ Future<void> main() async {
     MaterialApp(
       initialRoute: '/home',
       theme: themeData,
+      debugShowCheckedModeBanner: false,
       routes: {
         '/home': (context) => Material(
               child: StreamBuilder<User?>(

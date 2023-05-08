@@ -28,7 +28,7 @@ class _FoodServiceDetailsState extends State<FoodServiceDetails> {
         msg: result,
       );
       if (result == 'success' && mounted) {
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => Home()),
         );
@@ -101,6 +101,7 @@ class _FoodServiceDetailsState extends State<FoodServiceDetails> {
                                     decoration: InputDecoration(
                                       labelText: "Services' Name*",
                                       labelStyle: TextStyle(
+                                        fontSize: 17,
                                         color:
                                             Color.fromARGB(255, 21, 120, 131),
                                       ),
@@ -146,7 +147,8 @@ class _FoodServiceDetailsState extends State<FoodServiceDetails> {
                                               ? 'Change Location'
                                               : 'Pick current Location',
                                       style: TextStyle(
-                                        fontSize: 18,
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.w400,
                                         color:
                                             Color.fromARGB(255, 21, 120, 131),
                                       ),
@@ -183,7 +185,7 @@ class _FoodServiceDetailsState extends State<FoodServiceDetails> {
                                   child: const Text(
                                     "Submit",
                                     style: TextStyle(
-                                      fontSize: 18,
+                                      fontSize: 16,
                                       color: Color.fromARGB(255, 255, 255, 255),
                                     ),
                                   ),

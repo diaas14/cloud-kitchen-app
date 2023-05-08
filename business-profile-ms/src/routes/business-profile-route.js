@@ -1,13 +1,14 @@
 const express = require("express");
 const BusinessProfileController = require("../controllers/business-profile-controller");
-const { verifyToken } = require("../services/auth-service.js");
 
 const router = express.Router();
 
 const businessProfileController = new BusinessProfileController();
 
-router.post("/:userId", verifyToken, businessProfileController.updateProfile);
+router.get("/", businessProfileController.fetchAllProfiles);
+router.post("/", businessProfileController.createProfile);
 
-router.post("/", verifyToken, businessProfileController.createProfile);
+router.get("/:userId", businessProfileController.fetchProfile);
+router.post("/:userId", businessProfileController.updateProfile);
 
 module.exports = router;

@@ -34,7 +34,7 @@ class _SignUpState extends State<SignUp> {
         msg: result,
       );
       if (result == 'success' && mounted) {
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => FoodServiceDetails()),
         );
@@ -89,10 +89,14 @@ class _SignUpState extends State<SignUp> {
                     validator: ((value) {
                       return null;
                     }),
+                    cursorColor: Color.fromARGB(255, 21, 120, 131),
                     decoration: InputDecoration(
                       border: InputBorder.none,
                       labelText: 'Name*',
                       hintText: 'Enter your Name',
+                      labelStyle: TextStyle(
+                        color: Color.fromARGB(255, 21, 120, 131),
+                      ),
                     ),
                     controller: _nameController,
                   ),
@@ -115,10 +119,14 @@ class _SignUpState extends State<SignUp> {
                       }
                       return null;
                     }),
+                    cursorColor: Color.fromARGB(255, 21, 120, 131),
                     decoration: InputDecoration(
                       border: InputBorder.none,
                       labelText: 'Email*',
                       hintText: 'Enter your Email',
+                      labelStyle: TextStyle(
+                        color: Color.fromARGB(255, 21, 120, 131),
+                      ),
                     ),
                     controller: _emailController,
                   ),
@@ -166,19 +174,26 @@ class _SignUpState extends State<SignUp> {
                       return null;
                     }),
                     obscureText: _obsureText,
+                    cursorColor: Color.fromARGB(255, 21, 120, 131),
                     decoration: InputDecoration(
                       border: InputBorder.none,
                       labelText: 'Password*',
                       hintText: 'Enter your Password',
                       suffixIcon: IconButton(
-                        icon: Icon((_obsureText)
-                            ? Icons.visibility_off
-                            : Icons.visibility),
+                        icon: Icon(
+                          (_obsureText)
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                          color: Color.fromARGB(255, 21, 120, 131),
+                        ),
                         onPressed: () {
                           setState(() {
                             _obsureText = !_obsureText;
                           });
                         },
+                      ),
+                      labelStyle: TextStyle(
+                        color: Color.fromARGB(255, 21, 120, 131),
                       ),
                     ),
                     controller: _passwordController,
@@ -206,19 +221,26 @@ class _SignUpState extends State<SignUp> {
                       return null;
                     }),
                     obscureText: _obsureConfirmText,
+                    cursorColor: Color.fromARGB(255, 21, 120, 131),
                     decoration: InputDecoration(
                       border: InputBorder.none,
                       labelText: 'Confirm Password*',
                       hintText: 'Enter your Password',
                       suffixIcon: IconButton(
-                        icon: Icon((_obsureConfirmText)
-                            ? Icons.visibility_off
-                            : Icons.visibility),
+                        icon: Icon(
+                          (_obsureConfirmText)
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                          color: Color.fromARGB(255, 21, 120, 131),
+                        ),
                         onPressed: () {
                           setState(() {
                             _obsureConfirmText = !_obsureConfirmText;
                           });
                         },
+                      ),
+                      labelStyle: TextStyle(
+                        color: Color.fromARGB(255, 21, 120, 131),
                       ),
                     ),
                     controller: _confirmPasswordController,

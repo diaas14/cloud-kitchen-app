@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: authorization-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: authorization
+  template:
+    metadata:
+      labels:
+        app: authorization
+    spec:
+      containers:
+        - name: authorization
+          image: diaa14/authorization
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: authorization-serv
+spec:
+  selector:
+    app: authorization
+  ports:
+    - name: authorization
+      protocol: TCP
+      port: 4002
+      targetPort: 4002

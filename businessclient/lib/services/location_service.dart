@@ -22,13 +22,6 @@ Future<Position> determinePosition() async {
   return await Geolocator.getCurrentPosition();
 }
 
-// Future<Placemark> determinePlace() async {
-//   Position position = await determinePosition();
-//   List<Placemark> placemarks =
-//       await placemarkFromCoordinates(position.latitude, position.longitude);
-//   return placemarks[0];
-// }
-
 Future<Placemark> determinePlace(Position? position) async {
   List<Placemark> placemarks =
       await placemarkFromCoordinates(position!.latitude, position.longitude);

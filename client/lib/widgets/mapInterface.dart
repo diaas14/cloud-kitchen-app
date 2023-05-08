@@ -26,8 +26,36 @@ class _MapInterfaceState extends State<MapInterface> {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             Placemark place = snapshot.data!;
-            return Text(
-                '${place.street}, ${place.subLocality}, ${place.locality}, ${place.country},');
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('Your current location',
+                    style: TextStyle(
+                        letterSpacing: 1.2,
+                        color: Theme.of(context).primaryColor,
+                        fontWeight: FontWeight.bold)),
+                SizedBox(
+                  height: 20,
+                ),
+                Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.location_on,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                      Text(
+                          '${place.street}, ${place.subLocality}, ${place.locality}, ${place.country}',
+                          style: TextStyle(
+                              letterSpacing: 1.2,
+                              color: Theme.of(context).primaryColor,
+                              fontWeight: FontWeight.bold)),
+                    ],
+                  ),
+                ),
+              ],
+            );
           } else if (snapshot.hasError) {
             return Text(snapshot.error.toString());
           } else {

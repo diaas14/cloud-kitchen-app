@@ -26,7 +26,7 @@ class _SignInState extends State<SignIn> {
         msg: result,
       );
       if (result == 'success' && mounted) {
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => Home()),
         );
@@ -86,10 +86,14 @@ class _SignInState extends State<SignIn> {
                       }
                       return null;
                     }),
+                    cursorColor: Color.fromARGB(255, 21, 120, 131),
                     decoration: InputDecoration(
                       border: InputBorder.none,
                       labelText: 'Email*',
                       hintText: 'Enter your Email',
+                      labelStyle: TextStyle(
+                        color: Color.fromARGB(255, 21, 120, 131),
+                      ),
                     ),
                     controller: _emailController,
                   ),
@@ -113,19 +117,26 @@ class _SignInState extends State<SignIn> {
                       return null;
                     }),
                     obscureText: _obsureText,
+                    cursorColor: Color.fromARGB(255, 21, 120, 131),
                     decoration: InputDecoration(
                       border: InputBorder.none,
                       labelText: 'Password*',
                       hintText: 'Enter your Password',
                       suffixIcon: IconButton(
-                        icon: Icon((_obsureText)
-                            ? Icons.visibility_off
-                            : Icons.visibility),
+                        icon: Icon(
+                          (_obsureText)
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                          color: Color.fromARGB(255, 21, 120, 131),
+                        ),
                         onPressed: () {
                           setState(() {
                             _obsureText = !_obsureText;
                           });
                         },
+                      ),
+                      labelStyle: TextStyle(
+                        color: Color.fromARGB(255, 21, 120, 131),
                       ),
                     ),
                     controller: _passwordController,

@@ -2,7 +2,8 @@ const admin = require("firebase-admin");
 
 class UserController {
   async createUser(req, res) {
-    const { userId, email, name, photoUrl } = req.body;
+    const { userId, email, name, photoUrl, projectId } = req.body;
+
     try {
       const newUserRef = admin.firestore().collection("users").doc(userId);
       await newUserRef.set({
@@ -10,6 +11,9 @@ class UserController {
         name,
         ...(photoUrl && { photoUrl }),
       });
+
+      await admin.auth().setCustomUserClaims(userId, { projectId });
+
       res.status(201).json({ msg: "Registration complete" });
     } catch (err) {
       res.status(500).send(err);

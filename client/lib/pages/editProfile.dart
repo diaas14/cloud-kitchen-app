@@ -61,7 +61,7 @@ class _EditProfileState extends State<EditProfile> {
       appBar: AppBar(
         title: Text("Edit Profile"),
         centerTitle: true,
-        backgroundColor: Theme.of(context).primaryColor,
+        backgroundColor: Color.fromARGB(255, 21, 120, 131),
         elevation: 0,
       ),
       body: Container(

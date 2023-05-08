@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -22,6 +23,7 @@ Future<String> registerWithEmailPassword(
         'userId': user?.uid,
         'name': name,
         'email': user?.email,
+        'projectId': Firebase.app().options.projectId,
       },
       headers: {
         'Authorization': 'Bearer $token',
@@ -37,11 +39,10 @@ Future<String> registerWithEmailPassword(
 
 Future<String> signInWithEmailPassword(String email, String password) async {
   try {
-    UserCredential credential = await _auth.signInWithEmailAndPassword(
+    await _auth.signInWithEmailAndPassword(
       email: email,
       password: password,
     );
-    final token = await credential.user?.getIdToken();
     return 'success';
   } on FirebaseAuthException catch (e) {
     return e.code;
@@ -76,6 +77,7 @@ Future<String> signInWithGoogle() async {
           'name': googleUser?.displayName,
           'email': user?.email,
           if (googleUser?.photoUrl != null) 'photoUrl': googleUser?.photoUrl,
+          'projectId': Firebase.app().options.projectId,
         },
         headers: {
           'Authorization': 'Bearer $token',

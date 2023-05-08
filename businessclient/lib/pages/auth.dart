@@ -48,7 +48,10 @@ class _AuthState extends State<Auth> {
               signUp
                   ? SignIn(toggleView: _toggleView)
                   : SignUp(toggleView: _toggleView),
-              GoogleAuthButton(),
+              SizedBox(
+                height: 60,
+                child: GoogleAuthButton(),
+              ),
             ],
           ),
         ),

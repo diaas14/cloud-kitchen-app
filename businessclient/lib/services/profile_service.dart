@@ -37,3 +37,22 @@ Future<String> saveServiceDetails(String serviceName, Position? pos) async {
     return e.toString();
   }
 }
+
+Future<Map<String, dynamic>> fetchServiceDetails() async {
+  if (_auth.currentUser != null) {
+    final uid = _auth.currentUser?.uid;
+    final token = await _auth.currentUser?.getIdToken();
+    final res = await http.get(
+      Uri.parse('${apiUrl}api/business-profile/$uid'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+    if (res.statusCode == 200) {
+      return json.decode(res.body) as Map<String, dynamic>;
+    } else {
+      throw Exception('Failed to load profile data.');
+    }
+  }
+  throw Exception('No user found.');
+}

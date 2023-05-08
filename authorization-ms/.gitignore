@@ -1,0 +1,8 @@
+# Node.js
+node_modules/
+
+# firebase
+serviceAccountKey1.json
+serviceAccountKey2.json
+
+.env
