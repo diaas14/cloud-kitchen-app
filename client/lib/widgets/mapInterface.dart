@@ -16,7 +16,7 @@ class _MapInterfaceState extends State<MapInterface> {
   @override
   void initState() {
     super.initState();
-    _currentPlace = determinePlace();
+    _currentPlace = determineCurrentPlace();
   }
 
   @override

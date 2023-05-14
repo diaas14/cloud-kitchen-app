@@ -49,6 +49,7 @@ Future<String> signInWithEmailPassword(String email, String password) async {
   } on FirebaseAuthException catch (e) {
     return e.code;
   } catch (e) {
+    print(e.toString());
     return e.toString();
   }
 }
@@ -88,6 +89,7 @@ Future<String> signInWithGoogle() async {
     }
     return 'login success';
   } catch (e) {
+    print(e.toString());
     return e.toString();
   }
 }

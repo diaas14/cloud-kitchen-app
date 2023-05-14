@@ -9,6 +9,9 @@ router.get("/", businessProfileController.fetchAllProfiles);
 router.post("/", businessProfileController.createProfile);
 
 router.get("/:userId", businessProfileController.fetchProfile);
-router.post("/:userId", businessProfileController.updateProfile);
+router.post(
+  "/:userId",
+  businessProfileController.updateProfile.bind(businessProfileController)
+);
 
 module.exports = router;

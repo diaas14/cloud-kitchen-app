@@ -22,8 +22,11 @@ class _FoodServiceDetailsState extends State<FoodServiceDetails> {
 
   void _submitHandler(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
-      final name = _nameController.text.trim();
-      final result = await saveServiceDetails(name, position);
+      final data = <String, dynamic>{};
+      data['businessName'] = _nameController.text.trim();
+      data['position'] = position;
+      data['place'] = place;
+      final result = await updateBusinessData(data, null);
       Fluttertoast.showToast(
         msg: result,
       );
