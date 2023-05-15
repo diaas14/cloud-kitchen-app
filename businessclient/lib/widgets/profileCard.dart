@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:businessclient/services/profile_service.dart';
 import 'package:businessclient/pages/editBusinessDetails.dart';
 import 'package:businessclient/widgets/photosPicker.dart';
+import 'package:businessclient/widgets/photoGrid.dart';
 
 class ProfileCard extends StatefulWidget {
   const ProfileCard({super.key});
@@ -34,6 +35,7 @@ class _ProfileCardState extends State<ProfileCard> {
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           final profile = snapshot.data!;
+          print(profile['businessPicsUrls']);
           return Column(
             children: [
               Card(
@@ -81,9 +83,10 @@ class _ProfileCardState extends State<ProfileCard> {
                           fontSize: 17,
                         ),
                       ),
-                      if (!profile.containsKey('businessPicsUrls') ||
-                          profile['businessPicsUrls'].isEmpty())
-                        Text("Pics Not Available"),
+                      (!profile.containsKey('businessPicsUrls') ||
+                              profile['businessPicsUrls'].length == 0)
+                          ? Text("Pics Not Available")
+                          : PhotoGrid(urls: profile['businessPicsUrls']),
                       PhotosPicker()
                     ],
                   ),

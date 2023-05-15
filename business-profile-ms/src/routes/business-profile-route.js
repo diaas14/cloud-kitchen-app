@@ -8,6 +8,11 @@ const businessProfileController = new BusinessProfileController();
 router.get("/", businessProfileController.fetchAllProfiles);
 router.post("/", businessProfileController.createProfile);
 
+router.post(
+  "/images/:userId",
+  businessProfileController.uploadImages.bind(businessProfileController)
+);
+
 router.get("/:userId", businessProfileController.fetchProfile);
 router.post(
   "/:userId",

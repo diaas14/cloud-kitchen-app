@@ -20,25 +20,27 @@ class _HomeState extends State<Home> {
         backgroundColor: Theme.of(context).primaryColor,
         elevation: 0,
       ),
-      body: Column(
-        children: [
-          ProfileCard(),
-          ElevatedButton(
-            child: Text("Logout"),
-            onPressed: () async {
-              if (await GoogleSignIn().isSignedIn()) {
-                await GoogleSignIn().signOut();
-              }
-              FirebaseAuth.instance.signOut();
-              if (mounted) {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => Auth()),
-                );
-              }
-            },
-          ),
-        ],
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            ProfileCard(),
+            ElevatedButton(
+              child: Text("Logout"),
+              onPressed: () async {
+                if (await GoogleSignIn().isSignedIn()) {
+                  await GoogleSignIn().signOut();
+                }
+                FirebaseAuth.instance.signOut();
+                if (mounted) {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => Auth()),
+                  );
+                }
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

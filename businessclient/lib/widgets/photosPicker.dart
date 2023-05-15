@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:multi_image_picker/multi_image_picker.dart';
+import 'package:businessclient/services/profile_service.dart';
 
 class PhotosPicker extends StatefulWidget {
   const PhotosPicker({super.key});
@@ -103,7 +103,12 @@ class _PhotosPickerState extends State<PhotosPicker> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildImageGrid(),
-              TextButton(onPressed: () {}, child: Text("Post"))
+              TextButton(
+                  onPressed: () async {
+                    final res = await postImages(_imageFiles);
+                    print(res);
+                  },
+                  child: Text("Post"))
             ],
           ),
       ],

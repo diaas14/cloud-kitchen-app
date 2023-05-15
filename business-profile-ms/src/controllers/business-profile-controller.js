@@ -155,6 +155,28 @@ class BusinessProfileController {
       res.status(500).send(err);
     }
   }
+
+  async uploadImages(req, res) {
+    const files = req.files;
+    const userId = req.params.userId;
+    const userRef = admin.firestore().collection("businesses").doc(userId);
+    var urls = await userRef.get().then((doc) => doc.data().businessPicsUrls);
+    if (!urls) {
+      urls = [];
+    }
+    try {
+      for (const file of files) {
+        const url = await this.uploadImageToStorage.call(this, file);
+        urls.push(url);
+      }
+      await userRef.update({ businessPicsUrls: urls });
+      res.send({ urls });
+    } catch (error) {
+      console.error(error);
+      console.log(err);
+      res.status(500).send({ error: "Failed to upload images" });
+    }
+  }
 }
 
 module.exports = BusinessProfileController;
