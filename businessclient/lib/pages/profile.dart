@@ -4,6 +4,8 @@ import 'package:businessclient/pages/editBusinessDetails.dart';
 import 'package:businessclient/widgets/photosPicker.dart';
 import 'package:businessclient/widgets/photoGrid.dart';
 
+import '../widgets/mapInterface.dart';
+
 class Profile extends StatefulWidget {
   const Profile({super.key});
 
@@ -177,6 +179,15 @@ class _ProfileState extends State<Profile> {
                                     Text(profile['name'],
                                         style: TextStyle(fontSize: 24)),
                                     Text(profile['email']),
+                                    SizedBox(
+                                      height: 10,
+                                    ),
+                                    ElevatedButton(
+                                        onPressed: () => Navigator.of(context)
+                                            .push(MaterialPageRoute(
+                                                builder: (context) =>
+                                                    GoogleMapsUI())),
+                                        child: Text("View/Update Location"))
                                   ],
                                 ),
                               ),
