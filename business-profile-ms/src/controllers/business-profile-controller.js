@@ -177,6 +177,81 @@ class BusinessProfileController {
       res.status(500).send({ error: "Failed to upload images" });
     }
   }
+
+  async addItemToMenu(req, res) {
+    console.log(req.body);
+    const userId = req.params.userId;
+    try {
+      const {
+        itemName = null,
+        itemDescription = null,
+        itemPrice = null,
+        itemQuantity = null,
+      } = req.body;
+
+      const businessRef = admin
+        .firestore()
+        .collection("businesses")
+        .doc(userId);
+
+      const businessSnapshot = await businessRef.get();
+
+      if (!businessSnapshot.exists) {
+        return res.status(404).json({ msg: "Business User not found" });
+      }
+      const currentMenu = businessSnapshot.get("menu") || [];
+
+      var imageUrl = null;
+      if (req.files) {
+        imageUrl = req.files[0]
+          ? await this.uploadImageToStorage.call(this, req.files[0])
+          : null;
+      }
+
+      const newItem = {
+        ...(imageUrl && { itemImgUrl: imageUrl }),
+        ...(itemName && { itemName }),
+        ...(itemDescription && { itemDescription }),
+        ...(itemPrice && { itemPrice: parseFloat(itemPrice) }),
+        ...(itemQuantity && { itemQuantity: parseInt(itemQuantity) }),
+      };
+      console.log(newItem);
+      const updatedMenu = [...currentMenu, newItem];
+
+      await businessRef.update({ menu: updatedMenu });
+
+      res.status(200).json({ success: true, message: "Item added to menu" });
+    } catch (error) {
+      console.error(error);
+      res
+        .status(500)
+        .json({ success: false, message: "Error adding item to menu" });
+    }
+  }
+
+  async getMenuItems(req, res) {
+    try {
+      const userId = req.params.userId;
+      const businessRef = admin
+        .firestore()
+        .collection("businesses")
+        .doc(userId);
+      const businessSnapshot = await businessRef.get();
+
+      if (!businessSnapshot.exists) {
+        return res
+          .status(404)
+          .json({ success: false, message: "Business not found" });
+      }
+      const menu = businessSnapshot.get("menu") || [];
+      res.status(200).json({ success: true, menu });
+    } catch (error) {
+      console.error(error);
+      res
+        .status(500)
+        .json({ success: false, message: "Error fetching menu items" });
+    }
+  }
 }
 
 module.exports = BusinessProfileController;
