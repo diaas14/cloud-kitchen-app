@@ -73,20 +73,26 @@ class _ProfileState extends State<Profile> {
                                         fit: BoxFit.cover,
                                       ),
                               ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(profile['businessName'],
-                                      style: TextStyle(fontSize: 24)),
-                                  Text(
-                                    '${profile['address']['street']}, ${profile['address']['subLocality']}, ${profile['address']['locality']}, ${profile['address']['country']}',
-                                  ),
-                                ],
+                              Flexible(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(profile['businessName'],
+                                        style: TextStyle(fontSize: 24), softWrap: true),
+                                    Text(
+                                      '${profile['address']['street']}, ${profile['address']['subLocality']}, ${profile['address']['locality']}, ${profile['address']['country']},',
+                                      softWrap: true,
+                                    ),
+                                  ],
+                                ),
                               ),
                             ],
                           ),
+                          SizedBox(
+                            height: 10,
+                          ),
                           Text(
-                            "Photos",
+                            "Photos (Scroll to view)",
                             style: TextStyle(
                               color: Color.fromARGB(255, 0, 0, 0),
                               fontSize: 17,
@@ -181,13 +187,7 @@ class _ProfileState extends State<Profile> {
                                     Text(profile['email']),
                                     SizedBox(
                                       height: 10,
-                                    ),
-                                    ElevatedButton(
-                                        onPressed: () => Navigator.of(context)
-                                            .push(MaterialPageRoute(
-                                                builder: (context) =>
-                                                    GoogleMapsUI())),
-                                        child: Text("View/Update Location"))
+                                    )
                                   ],
                                 ),
                               ),
