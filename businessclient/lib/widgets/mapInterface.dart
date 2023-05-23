@@ -1,14 +1,23 @@
+import 'dart:convert';
+
 import 'package:businessclient/services/location_service.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geocoding_platform_interface/src/models/placemark.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:geolocator_platform_interface/src/models/position.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+late Position posFromProfile;
 
 class GoogleMapsUI extends StatefulWidget {
-  const GoogleMapsUI({super.key});
+  final Position location;
+  GoogleMapsUI(this.location, {super.key}) {
+    posFromProfile = location;
+  }
 
   @override
   State<GoogleMapsUI> createState() => GoogleMapsUIState();
@@ -18,7 +27,7 @@ class GoogleMapsUIState extends State<GoogleMapsUI> {
   final Completer<GoogleMapController> _controller =
       Completer<GoogleMapController>();
 
-  Future<Position> currentLocation = fetchPosition();
+  Future<Position> currentLocation = Future.value(posFromProfile);
 
   @override
   Widget build(BuildContext context) {
@@ -28,9 +37,8 @@ class GoogleMapsUIState extends State<GoogleMapsUI> {
           builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
             if (snapshot.hasData) {
               Position position = snapshot.data;
-              return GestureDetector(
-                onTap: () => FocusScope.of(context).unfocus(),
-                child: GoogleMap(
+              return Stack(children: [
+                GoogleMap(
                   onTap: (LatLng pickedLocation) {
                     changeLocation(context, pickedLocation, position);
                   },
@@ -55,7 +63,17 @@ class GoogleMapsUIState extends State<GoogleMapsUI> {
                     ),
                   },
                 ),
-              );
+                Positioned(
+                  bottom: 16,
+                  right: 16,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop(currentLocation);
+                    },
+                    child: Text('OK'),
+                  ),
+                ),
+              ]);
             } else if (snapshot.hasError) {
               return Center(
                 child: Text('${snapshot.error}'),
@@ -138,5 +156,11 @@ class GoogleMapsUIState extends State<GoogleMapsUI> {
 }
 
 Future<Position> fetchPosition() async {
+  // var lat = loc['latitude'];
+  // var lng = loc['longitude'];
+  // String bname = profileObject['businessName'];
+  // print(bname);
+  // print(profileObject['location'].longitude);
+  // return locationObject;
   return await determinePosition();
 }
