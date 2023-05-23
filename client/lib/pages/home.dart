@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:client/widgets/profile.dart';
+import 'package:client/pages/profile.dart';
 import 'package:client/widgets/mapInterface.dart';
 import 'package:client/widgets/foodProviders.dart';
 
@@ -13,11 +13,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   int _selectedItem = 0;
 
-  final _screens = <Widget>[
-    const MapInterface(),
-    const Profile(),
-    const FoodProviders()
-  ];
+  final _screens = <Widget>[const MapInterface(), const FoodProviders()];
 
   void _onItemTapped(int idx) {
     setState(
@@ -35,6 +31,18 @@ class _HomeState extends State<Home> {
         centerTitle: true,
         backgroundColor: Color.fromARGB(255, 36, 151, 164),
         elevation: 0,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.person),
+            color: Colors.white,
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => Profile()),
+              );
+            },
+          ),
+        ],
       ),
       body: _screens.elementAt(_selectedItem),
       bottomNavigationBar: BottomNavigationBar(
@@ -42,10 +50,6 @@ class _HomeState extends State<Home> {
           BottomNavigationBarItem(
             icon: Icon(Icons.map),
             label: "Map",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: "Profile",
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
