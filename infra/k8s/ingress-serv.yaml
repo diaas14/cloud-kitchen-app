@@ -8,7 +8,7 @@ metadata:
     nginx.ingress.kubernetes.io/auth-url: "http://authorization-serv.default.svc.cluster.local:4002/api/"
 spec:
   rules:
-    - host: 192.168.187.126.nip.io
+    - host: 192.168.1.6.nip.io
       http:
         paths:
           - path: /api/profile/?(.*)
@@ -25,3 +25,10 @@ spec:
                 name: business-profile-serv
                 port:
                   number: 4001
+          - path: /api/orders/?(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: orders-serv
+                port:
+                  number: 4003
