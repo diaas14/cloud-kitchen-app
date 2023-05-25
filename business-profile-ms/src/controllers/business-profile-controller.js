@@ -1,4 +1,5 @@
 const admin = require("firebase-admin");
+const uuid = require("uuid");
 
 class BusinessProfileController {
   async createProfile(req, res) {
@@ -6,6 +7,7 @@ class BusinessProfileController {
     try {
       const newUserRef = admin.firestore().collection("businesses").doc(userId);
       await newUserRef.set({
+        userId,
         email,
         name,
         ...(photoUrl && { photoUrl }),
@@ -209,6 +211,7 @@ class BusinessProfileController {
       }
 
       const newItem = {
+        id: uuid.v4(),
         ...(imageUrl && { itemImgUrl: imageUrl }),
         ...(itemName && { itemName }),
         ...(itemDescription && { itemDescription }),
