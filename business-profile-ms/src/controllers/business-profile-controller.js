@@ -21,28 +21,6 @@ class BusinessProfileController {
     }
   }
 
-  // async updateProfile(req, res) {
-  //   const userId = req.params.userId;
-  //   const { businessName, locationData, address } = req.body;
-  //   const { latitude, longitude } = JSON.parse(locationData);
-  //   const addressData = JSON.parse(address);
-  //   const geoPoint = new admin.firestore.GeoPoint(latitude, longitude);
-  //   try {
-  //     const newUserRef = admin.firestore().collection("businesses").doc(userId);
-  //     await newUserRef.update({
-  //       businessName,
-  //       location: geoPoint,
-  //       address: addressData,
-  //     });
-  //     res.status(200).json({ msg: "Update complete" });
-  //   } catch (err) {
-  //     console.error(err);
-  //     res
-  //       .status(500)
-  //       .send({ err: "An error occurred while updating the profile" });
-  //   }
-  // }
-
   getLocation(locationData) {
     const { latitude, longitude } = JSON.parse(locationData);
     return new admin.firestore.GeoPoint(latitude, longitude);
@@ -123,6 +101,7 @@ class BusinessProfileController {
     }
   }
 
+  // show profile
   async fetchProfile(req, res) {
     const userId = req.params.userId;
     try {
@@ -143,6 +122,7 @@ class BusinessProfileController {
     }
   }
 
+  // used by client app
   async fetchAllProfiles(req, res) {
     console.log("Request receieved");
     try {
@@ -180,6 +160,58 @@ class BusinessProfileController {
     }
   }
 
+  // async addItemToMenu(req, res) {
+  //   console.log(req.body);
+  //   const userId = req.params.userId;
+  //   try {
+  //     const {
+  //       itemName = null,
+  //       itemDescription = null,
+  //       itemPrice = null,
+  //       itemQuantity = null,
+  //     } = req.body;
+
+  //     const businessRef = admin
+  //       .firestore()
+  //       .collection("businesses")
+  //       .doc(userId);
+
+  //     const businessSnapshot = await businessRef.get();
+
+  //     if (!businessSnapshot.exists) {
+  //       return res.status(404).json({ msg: "Business User not found" });
+  //     }
+  //     const currentMenu = businessSnapshot.get("menu") || [];
+
+  //     var imageUrl = null;
+  //     if (req.files) {
+  //       imageUrl = req.files[0]
+  //         ? await this.uploadImageToStorage.call(this, req.files[0])
+  //         : null;
+  //     }
+
+  //     const newItem = {
+  //       id: uuid.v4(),
+  //       ...(imageUrl && { itemImgUrl: imageUrl }),
+  //       ...(itemName && { itemName }),
+  //       ...(itemDescription && { itemDescription }),
+  //       ...(itemPrice && { itemPrice: parseFloat(itemPrice) }),
+  //       ...(itemQuantity && { itemQuantity: parseInt(itemQuantity) }),
+  //     };
+  //     console.log(newItem);
+  //     const updatedMenu = [...currentMenu, newItem];
+
+  //     await businessRef.update({ menu: updatedMenu });
+
+  //     res.status(200).json({ success: true, message: "Item added to menu" });
+  //   } catch (error) {
+  //     console.error(error);
+  //     res
+  //       .status(500)
+  //       .json({ success: false, message: "Error adding item to menu" });
+  //   }
+  // }
+
   async addItemToMenu(req, res) {
     console.log(req.body);
     const userId = req.params.userId;
@@ -191,17 +223,8 @@ class BusinessProfileController {
         itemQuantity = null,
       } = req.body;
 
-      const businessRef = admin
-        .firestore()
-        .collection("businesses")
-        .doc(userId);
-
-      const businessSnapshot = await businessRef.get();
-
-      if (!businessSnapshot.exists) {
-        return res.status(404).json({ msg: "Business User not found" });
-      }
-      const currentMenu = businessSnapshot.get("menu") || [];
+      const menuRef = admin.firestore().collection("menu");
+      const newItemRef = menuRef.doc();
 
       var imageUrl = null;
       if (req.files) {
@@ -211,43 +234,73 @@ class BusinessProfileController {
       }
 
       const newItem = {
-        id: uuid.v4(),
+        itemId: newItemRef.id,
+        providerId: userId,
         ...(imageUrl && { itemImgUrl: imageUrl }),
         ...(itemName && { itemName }),
         ...(itemDescription && { itemDescription }),
         ...(itemPrice && { itemPrice: parseFloat(itemPrice) }),
         ...(itemQuantity && { itemQuantity: parseInt(itemQuantity) }),
       };
-      console.log(newItem);
-      const updatedMenu = [...currentMenu, newItem];
 
-      await businessRef.update({ menu: updatedMenu });
+      await newItemRef.set(newItem);
 
-      res.status(200).json({ success: true, message: "Item added to menu" });
+      res
+        .status(200)
+        .json({ success: true, message: "Item added to menu collection" });
     } catch (error) {
       console.error(error);
-      res
-        .status(500)
-        .json({ success: false, message: "Error adding item to menu" });
+      res.status(500).json({
+        success: false,
+        message: "Error adding item to menu collection",
+      });
     }
   }
 
+  // async getMenuItems(req, res) {
+  //   try {
+  //     const userId = req.params.userId;
+  //     const businessRef = admin
+  //       .firestore()
+  //       .collection("businesses")
+  //       .doc(userId);
+  //     const businessSnapshot = await businessRef.get();
+
+  //     if (!businessSnapshot.exists) {
+  //       return res
+  //         .status(404)
+  //         .json({ success: false, message: "Business not found" });
+  //     }
+  //     const menu = businessSnapshot.get("menu") || [];
+  //     res.status(200).json({ success: true, menu });
+  //   } catch (error) {
+  //     console.error(error);
+  //     res
+  //       .status(500)
+  //       .json({ success: false, message: "Error fetching menu items" });
+  //   }
+  // }
+
   async getMenuItems(req, res) {
     try {
+      var menuItems = [];
       const userId = req.params.userId;
-      const businessRef = admin
-        .firestore()
-        .collection("businesses")
-        .doc(userId);
-      const businessSnapshot = await businessRef.get();
+      const menuRef = admin.firestore().collection("menu");
+      const query = menuRef.where("providerId", "==", userId);
 
-      if (!businessSnapshot.exists) {
-        return res
-          .status(404)
-          .json({ success: false, message: "Business not found" });
+      const snapshot = await query.get();
+
+      if (snapshot.empty) {
+        console.log("No matching documents.");
+      } else {
+        snapshot.forEach((doc) => {
+          console.log("Document ID:", doc.id);
+          console.log("Document data:", doc.data());
+          const menuItem = doc.data();
+          menuItems.push(menuItem);
+        });
       }
-      const menu = businessSnapshot.get("menu") || [];
-      res.status(200).json({ success: true, menu });
+      res.status(200).json({ success: true, menu: menuItems });
     } catch (error) {
       console.error(error);
       res

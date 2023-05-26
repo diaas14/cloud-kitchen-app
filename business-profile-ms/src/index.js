@@ -5,6 +5,12 @@ const multer = require("multer");
 
 const businessProfileRoute = require("./routes/business-profile-route");
 
+const rabbitmq = require("./rabbitmq");
+const amqp = require("amqplib");
+const rabbitmqUrl = "amqp://rabbitmq-serv:5672";
+const username = "default";
+const password = "default";
+
 const app = express();
 const port = process.env.PORT || 4001;
 
@@ -25,6 +31,21 @@ admin.initializeApp({
 
 app.use("/api/business-profile", businessProfileRoute);
 
-app.listen(port, () => {
-  console.log(`Business profile microservice running on port ${port}`);
-});
+async function startMicroservice() {
+  try {
+    const connection = await amqp.connect(rabbitmqUrl, {
+      credentials: amqp.credentials.plain(username, password),
+    });
+    const channel = await connection.createChannel();
+
+    await rabbitmq.consumeMessages(channel);
+
+    app.listen(port, () => {
+      console.log(`Business profile microservice running on port ${port}`);
+    });
+  } catch (error) {
+    console.error("Error starting the microservice:", error);
+  }
+}
+
+startMicroservice();
