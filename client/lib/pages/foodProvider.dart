@@ -5,19 +5,34 @@ import 'package:client/pages/profile.dart';
 import 'package:client/widgets/menu.dart';
 import 'package:client/widgets/menuList.dart';
 import 'package:provider/provider.dart';
+import 'package:client/services/business_service.dart';
 
 class FoodProvider extends StatefulWidget {
+  final String providerId;
   final Map<String, dynamic> profile;
-  const FoodProvider({super.key, required this.profile});
+  const FoodProvider(
+      {super.key, required this.profile, required this.providerId});
 
   @override
   State<FoodProvider> createState() => _FoodProviderState();
 }
 
 class _FoodProviderState extends State<FoodProvider> {
+  List<dynamic> _menu = [];
+
+  @override
+  void initState() {
+    super.initState();
+    initAsync();
+  }
+
+  Future<void> initAsync() async {
+    _menu = await fetchMenu(widget.providerId);
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
-    print("${widget.profile}");
     return Scaffold(
       appBar: AppBar(
         title: Text("Menu"),
@@ -79,8 +94,8 @@ class _FoodProviderState extends State<FoodProvider> {
           Menu(profile: widget.profile),
           Expanded(
             child: MenuList(
-              items: widget.profile["menu"] ?? [],
-              providerId: widget.profile["userId"],
+              items: _menu,
+              providerId: widget.providerId,
             ),
           ),
         ],

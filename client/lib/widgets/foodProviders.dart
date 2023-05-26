@@ -34,7 +34,8 @@ class _FoodProvidersState extends State<FoodProviders> {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => FoodProvider(profile: profile)));
+                    builder: (context) => FoodProvider(
+                        profile: profile, providerId: profile["userId"])));
           },
           child: Card(
             child: Padding(

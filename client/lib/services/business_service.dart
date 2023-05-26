@@ -23,3 +23,23 @@ Future<List<Map<String, dynamic>>> fetchBusinessProfiles() async {
     throw Exception('Failed to fetch profiles');
   }
 }
+
+Future<List<dynamic>> fetchMenu(String providerId) async {
+  final token = await _auth.currentUser?.getIdToken();
+  final response = await http.get(
+    Uri.parse('${apiUrl}api/business-profile/menu/$providerId'),
+    headers: {
+      'Authorization': 'Bearer $token',
+    },
+  );
+  print(response.body);
+  if (response.statusCode == 200) {
+    final menuList = jsonDecode(response.body)['menu'] as List<dynamic>;
+    return menuList
+        .map((menuItem) => Map<String, dynamic>.from(menuItem))
+        .toList();
+  } else {
+    print(response.body);
+    throw Exception('Failed to fetch profiles');
+  }
+}
