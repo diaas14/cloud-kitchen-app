@@ -5,6 +5,6 @@ const router = express.Router();
 
 const orderController = new OrderController();
 
-router.post("/", userController.createOrder);
+router.post("/", orderController.createOrder.bind(orderController));
 
 module.exports = router;

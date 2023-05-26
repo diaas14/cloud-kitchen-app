@@ -2,8 +2,9 @@ const express = require("express");
 const admin = require("firebase-admin");
 const bodyParser = require("body-parser");
 const multer = require("multer");
+const rabbitmq = require("./rabbitmq");
 
-const usersRoute = require("./routes/order-route");
+const ordersRoute = require("./routes/order-route");
 
 const app = express();
 const port = process.env.PORT || 4003;
@@ -23,6 +24,16 @@ admin.initializeApp({
 
 app.use("/api/orders", ordersRoute);
 
-app.listen(port, () => {
-  console.log(`Orders microservice running on port ${port}`);
-});
+async function startMicroservice() {
+  try {
+    await rabbitmq.consumeMessages();
+
+    app.listen(port, () => {
+      console.log(`Orders microservice running on port ${port}`);
+    });
+  } catch (error) {
+    console.error("Error starting the microservice:", error);
+  }
+}
+
+startMicroservice();

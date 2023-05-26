@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbitmq-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rabbitmq
+  template:
+    metadata:
+      labels:
+        app: rabbitmq
+    spec:
+      containers:
+        - name: rabbitmq
+          image: rabbitmq:latest
+          ports:
+            - containerPort: 5672
+              name: rabbitmq
+          env:
+            - name: RABBITMQ_DEFAULT_USER
+              value: "default"
+            - name: RABBITMQ_DEFAULT_PASS
+              value: "default"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq-serv
+spec:
+  ports:
+    - name: rabbitmq
+      port: 5672
+      targetPort: 5672
+  selector:
+    app: rabbitmq
