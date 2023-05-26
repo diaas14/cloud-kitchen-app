@@ -6,6 +6,7 @@ import 'package:client/models/cartModel.dart';
 class MenuList extends StatefulWidget {
   final List<dynamic> items;
   final String providerId;
+
   const MenuList({Key? key, required this.items, required this.providerId})
       : super(key: key);
 
@@ -14,8 +15,38 @@ class MenuList extends StatefulWidget {
 }
 
 class _MenuListState extends State<MenuList> {
+  void _addItemToCart(String itemId, String itemName, double itemPrice,
+      String? itemImgUrl, CartModel cart) {
+    final item = CartItem(
+      id: itemId,
+      providerId: widget.providerId,
+      name: itemName,
+      price: itemPrice,
+      imageUrl: itemImgUrl,
+      units: 1,
+    );
+    try {
+      cart.addItem(item);
+    } catch (e) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Error'),
+          content: Text(e.toString()),
+          actions: [
+            TextButton(
+              child: Text('OK'),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final cart = Provider.of<CartModel>(context);
     if (widget.items.isEmpty) {
       return Center(
         child: Text("Uh Oh, No Items Available"),
@@ -31,7 +62,6 @@ class _MenuListState extends State<MenuList> {
         final itemPrice = (menuItem['itemPrice'] ?? 0).toDouble();
         final itemQuantity = menuItem['itemQuantity'] ?? 0;
         final itemImgUrl = menuItem['itemImgUrl'];
-        final cart = Provider.of<CartModel>(context);
         return Card(
           child: ListTile(
             title: Text(
@@ -83,36 +113,30 @@ class _MenuListState extends State<MenuList> {
                           color: Colors.grey[600],
                         ),
                       ),
-                      ElevatedButton(
-                        onPressed: () {
-                          final item = CartItem(
-                            id: itemId,
-                            providerId: widget.providerId,
-                            name: itemName,
-                            price: itemPrice,
-                            imageUrl: itemImgUrl,
-                            units: 1,
-                          );
-                          try {
-                            cart.addItem(item);
-                          } catch (e) {
-                            showDialog(
-                              context: context,
-                              builder: (context) => AlertDialog(
-                                title: Text('Error'),
-                                content: Text(e.toString()),
-                                actions: [
-                                  TextButton(
-                                    child: Text('OK'),
-                                    onPressed: () =>
-                                        Navigator.of(context).pop(),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }
-                        },
-                        child: Text('Add'),
+                      Row(
+                        children: [
+                          IconButton(
+                            icon: Icon(Icons.arrow_drop_up),
+                            onPressed: cart.items[itemId] == null ||
+                                    cart.items[itemId]!.getUnits() <
+                                        itemQuantity
+                                ? () {
+                                    _addItemToCart(itemId, itemName, itemPrice,
+                                        itemImgUrl, cart);
+                                  }
+                                : null,
+                          ),
+                          Text(
+                            cart.items[itemId] == null
+                                ? '0'
+                                : cart.items[itemId]!.getUnits().toString(),
+                          ),
+                          IconButton(
+                              icon: Icon(Icons.arrow_drop_down),
+                              onPressed: () {
+                                cart.removeItemFromCart(itemId);
+                              }),
+                        ],
                       ),
                     ],
                   ),

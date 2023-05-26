@@ -38,11 +38,11 @@ class _CartState extends State<Cart> {
                 ),
               ),
               TextButton(
-                child: Text("Place Order"),
                 onPressed: () async {
-                  String res = await placeOrder();
+                  String res = await placeOrder(cartItems);
                   print(res);
                 },
+                child: Text("Place Order"),
               ),
               TextButton(
                 child: Text("Clear Cart"),

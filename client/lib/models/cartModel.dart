@@ -16,6 +16,21 @@ class CartItem {
     this.imageUrl,
     required this.units,
   });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'providerId': providerId,
+      'name': name,
+      'price': price,
+      'imageUrl': imageUrl,
+      'units': units,
+    };
+  }
+
+  int getUnits() {
+    return units;
+  }
 }
 
 class CartModel extends ChangeNotifier {
@@ -48,8 +63,16 @@ class CartModel extends ChangeNotifier {
   }
 
   void removeItemFromCart(String itemId) {
-    _items.remove(itemId);
-    notifyListeners();
+    if (_items.containsKey(itemId)) {
+      final item = _items[itemId]!;
+      item.units--;
+
+      if (item.units == 0) {
+        _items.remove(itemId);
+      }
+
+      notifyListeners();
+    }
   }
 
   void clearCart() {
