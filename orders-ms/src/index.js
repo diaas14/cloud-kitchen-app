@@ -5,6 +5,8 @@ const multer = require("multer");
 
 const ordersRoute = require("./routes/order-route");
 
+const rabbitmq = require("./rabbitmq");
+
 const app = express();
 const port = process.env.PORT || 4003;
 
@@ -23,6 +25,18 @@ admin.initializeApp({
 
 app.use("/api/orders", ordersRoute);
 
-app.listen(port, () => {
-  console.log(`Orders microservice running on port ${port}`);
-});
+async function startApp() {
+  const { connection, channel } =
+    await rabbitmq.establishConnectionAndChannel();
+
+  app.listen(port, () => {
+    console.log(`Orders microservice running on port ${port}`);
+  });
+
+  process.on("SIGINT", async () => {
+    await rabbitmq.closeConnectionAndChannel(connection, channel);
+    process.exit();
+  });
+}
+
+startApp();

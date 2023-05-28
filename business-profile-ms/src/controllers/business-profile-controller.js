@@ -294,8 +294,6 @@ class BusinessProfileController {
         console.log("No matching documents.");
       } else {
         snapshot.forEach((doc) => {
-          console.log("Document ID:", doc.id);
-          console.log("Document data:", doc.data());
           const menuItem = doc.data();
           menuItems.push(menuItem);
         });

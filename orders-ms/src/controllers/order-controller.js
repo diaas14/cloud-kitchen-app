@@ -1,12 +1,5 @@
-const admin = require("firebase-admin");
 const amqp = require("amqplib");
-
-const rabbitmqUrl = "amqp://rabbitmq-serv:5672";
-
-// const username = process.env.RABBITMQ_USERNAME;
-// const password = process.env.RABBITMQ_PASSWORD;
-const username = "default";
-const password = "default";
+const rabbitmq = require("../rabbitmq");
 
 class OrderController {
   async createOrder(req, res) {
@@ -14,18 +7,9 @@ class OrderController {
       const { customerId, cartItems } = req.body;
       const order = JSON.parse(cartItems);
 
-      const connection = await amqp.connect(rabbitmqUrl, {
-        credentials: amqp.credentials.plain(username, password),
-      });
-      const channel = await connection.createChannel();
+      const channel = rabbitmq.getChannel();
 
-      await this.reduceItemQuantity(channel, order);
-
-      // TO DO
-      // const processedOrder = await processOrder(order);
-
-      await channel.close();
-      await connection.close();
+      await this.checkItemAvailability(channel, order);
 
       res.status(201).send();
     } catch (error) {
@@ -33,6 +17,48 @@ class OrderController {
       res
         .status(500)
         .json({ error: "An error occurred while creating the order." });
+    }
+  }
+
+  async checkItemAvailability(channel, order) {
+    const queue = "itemAvailabilityCheck";
+    await channel.assertQueue(queue);
+
+    const messages = [];
+
+    for (const itemId in order) {
+      const message = {
+        itemId,
+        providerId: order[itemId]["providerId"],
+        quantity: order[itemId]["units"],
+      };
+      messages.push(message);
+    }
+
+    channel.sendToQueue(queue, Buffer.from(JSON.stringify(messages)));
+    console.log(
+      `Sent item availability check message: ${JSON.stringify(messages)}`
+    );
+
+    console.log("checking avail status");
+    const availabilityStatusQueue = "availabilityStatus";
+    await channel.assertQueue(availabilityStatusQueue);
+    const message = await new Promise((resolve) => {
+      channel.consume(
+        availabilityStatusQueue,
+        (msg) => {
+          resolve(msg);
+        },
+        { noAck: true }
+      );
+    });
+
+    if (message) {
+      const content = message.content.toString();
+      const availabilityStatus = JSON.parse(content);
+      console.log("Avail status", availabilityStatus);
+    } else {
+      console.log("No message.");
     }
   }
 
