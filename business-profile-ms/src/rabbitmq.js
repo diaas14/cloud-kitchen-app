@@ -1,91 +1,67 @@
 const admin = require("firebase-admin");
 
-const queue = "itemAvailabilityCheck";
-
-// async function checkItemAvailabilityInFirebase(messages) {
-//   const menuRef = admin.firestore().collection("menu");
-
-//   for (const message of messages) {
-//     const { itemId, providerId, quantity } = message;
-
-//     const query = menuRef.where("itemId", "==", itemId);
-
-//     const snapshot = await query.get();
-
-//     if (snapshot.empty) {
-//       console.log(`No matching documents for item ${itemId}.`);
-//       // Handle unavailability of the item
-//     } else {
-//       snapshot.forEach((doc) => {
-//         console.log("Quantity avaliable:", doc.data()["itemQuantity"]);
-//         console.log(
-//           "Avaliable status:",
-//           doc.data()["itemQuantity"] >= quantity
-//         );
-//         // Process the available item
-//       });
-//     }
-//   }
-// }
+const itemAvailabilityStatusQueue = "itemAvailabilityStatus";
+const itemAvailabilityCheckQueue = "itemAvailabilityCheck";
 
 async function checkItemAvailabilityInFirebase(messages) {
-  console.log("checkItemAvailabilityInFirebase executed");
   const menuRef = admin.firestore().collection("menu");
 
+  const itemIds = messages.map((message) => message.itemId);
+  const query = menuRef.where("itemId", "in", itemIds);
+
+  const snapshot = await query.get();
+  const itemAvailabilityMap = new Map();
+
+  snapshot.forEach((doc) => {
+    itemAvailabilityMap.set(doc.data().itemId, doc.data().itemQuantity);
+  });
+
   for (const message of messages) {
-    const { itemId, providerId, quantity } = message;
+    const { itemId, quantity } = message;
+    const itemQuantity = itemAvailabilityMap.get(itemId);
 
-    const query = menuRef.where("itemId", "==", itemId);
-
-    const snapshot = await query.get();
-    var available = true;
-
-    if (snapshot.empty) {
+    if (itemQuantity === undefined) {
       console.log(`No matching documents for item ${itemId}.`);
       return false;
-    } else {
-      snapshot.forEach((doc) => {
-        console.log("Quantity avaliable:", doc.data()["itemQuantity"]);
-        console.log(
-          "Avaliable status:",
-          doc.data()["itemQuantity"] >= quantity
-        );
-        available &= doc.data()["itemQuantity"] >= quantity;
-      });
+    }
+
+    console.log("Quantity available:", itemQuantity);
+    console.log("Available status:", itemQuantity >= quantity);
+
+    if (itemQuantity < quantity) {
+      return false;
     }
   }
-  return available;
+  return true;
 }
 
 async function publishAvailabilityStatus(channel, res) {
-  const availabilityStatusQueue = "availabilityStatus";
-  await channel.assertQueue(availabilityStatusQueue);
-  channel.sendToQueue(
-    availabilityStatusQueue,
-    Buffer.from(JSON.stringify(res))
+  await channel.assertQueue(itemAvailabilityStatusQueue, { durable: true });
+  const message = {
+    availabilityStatus: res,
+  };
+  await channel.sendToQueue(
+    itemAvailabilityStatusQueue,
+    Buffer.from(JSON.stringify(message))
   );
-  console.log(`Published availability status: ${JSON.stringify(res)}`);
+  console.log(`Published availability status: ${JSON.stringify(message)}`);
 }
 
 async function consumeMessages(channel) {
   try {
-    await channel.assertQueue(queue);
+    await channel.assertQueue(itemAvailabilityCheckQueue, { durable: true });
     await channel.prefetch(0);
-    await channel.consume(queue, async (message) => {
+    await channel.consume(itemAvailabilityCheckQueue, async (message) => {
       if (message !== null) {
         try {
-          console.log("Message received!");
           const messageContent = JSON.parse(message.content.toString());
           const res = await checkItemAvailabilityInFirebase(messageContent);
-          console.log(res);
           console.log(
             `Received and processed item availability message: ${JSON.stringify(
               messageContent
             )}`
           );
-          // Publish the result to the availabilityStatus queue
           await publishAvailabilityStatus(channel, res);
-
           channel.ack(message);
           console.log("Acknowledged");
         } catch (error) {
@@ -100,4 +76,20 @@ async function consumeMessages(channel) {
   }
 }
 
-module.exports = { consumeMessages };
+async function establishConnectionAndChannel(rabbitmqUrl, username, password) {
+  try {
+    const amqp = require("amqplib");
+    const connection = await amqp.connect(rabbitmqUrl, {
+      credentials: amqp.credentials.plain(username, password),
+    });
+    const channel = await connection.createChannel();
+    return { connection, channel };
+  } catch (error) {
+    console.error("Error establishing connection and channel:", error);
+  }
+}
+
+module.exports = {
+  consumeMessages,
+  establishConnectionAndChannel,
+};

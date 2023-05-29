@@ -13,6 +13,7 @@ async function establishConnectionAndChannel() {
       credentials: amqp.credentials.plain(username, password),
     });
     channel = await connection.createChannel();
+    await channel.prefetch(0);
     console.log("RabbitMQ connection and channel established");
     return { connection, channel };
   } catch (error) {

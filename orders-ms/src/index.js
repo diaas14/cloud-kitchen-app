@@ -26,17 +26,23 @@ admin.initializeApp({
 app.use("/api/orders", ordersRoute);
 
 async function startApp() {
-  const { connection, channel } =
-    await rabbitmq.establishConnectionAndChannel();
+  try {
+    const { connection, channel } =
+      await rabbitmq.establishConnectionAndChannel();
 
-  app.listen(port, () => {
-    console.log(`Orders microservice running on port ${port}`);
-  });
-
-  process.on("SIGINT", async () => {
-    await rabbitmq.closeConnectionAndChannel(connection, channel);
-    process.exit();
-  });
+    app.listen(port, () => {
+      console.log(`Orders microservice running on port ${port}`);
+    });
+  } catch (error) {
+    console.error("Failed to start the app:", error);
+    process.exit(1);
+  }
 }
 
 startApp();
+
+process.on("exit", async () => {
+  const channel = rabbitmq.getChannel();
+  const connection = rabbitmq.getConnection();
+  await rabbitmq.closeConnectionAndChannel(channel, connection);
+});

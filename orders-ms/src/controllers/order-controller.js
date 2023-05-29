@@ -1,6 +1,9 @@
 const amqp = require("amqplib");
 const rabbitmq = require("../rabbitmq");
 
+const itemAvailabilityCheckQueue = "itemAvailabilityCheck";
+const itemAvailabilityStatusQueue = "itemAvailabilityStatus";
+
 class OrderController {
   async createOrder(req, res) {
     try {
@@ -9,7 +12,9 @@ class OrderController {
 
       const channel = rabbitmq.getChannel();
 
-      await this.checkItemAvailability(channel, order);
+      await this.checkItemAvailability(channel, order, (availabilityStatus) => {
+        console.log("It returned!!! ", availabilityStatus);
+      });
 
       res.status(201).send();
     } catch (error) {
@@ -20,64 +25,46 @@ class OrderController {
     }
   }
 
-  async checkItemAvailability(channel, order) {
-    const queue = "itemAvailabilityCheck";
-    await channel.assertQueue(queue);
+  async checkItemAvailability(channel, order, callback) {
+    try {
+      await channel.assertQueue(itemAvailabilityCheckQueue, { durable: true });
 
-    const messages = [];
-
-    for (const itemId in order) {
-      const message = {
+      const messages = Object.entries(order).map(([itemId, { units }]) => ({
         itemId,
-        providerId: order[itemId]["providerId"],
-        quantity: order[itemId]["units"],
-      };
-      messages.push(message);
-    }
+        quantity: units,
+      }));
 
-    channel.sendToQueue(queue, Buffer.from(JSON.stringify(messages)));
-    console.log(
-      `Sent item availability check message: ${JSON.stringify(messages)}`
-    );
-
-    console.log("checking avail status");
-    const availabilityStatusQueue = "availabilityStatus";
-    await channel.assertQueue(availabilityStatusQueue);
-    const message = await new Promise((resolve) => {
-      channel.consume(
-        availabilityStatusQueue,
-        (msg) => {
-          resolve(msg);
-        },
-        { noAck: true }
+      await channel.sendToQueue(
+        itemAvailabilityCheckQueue,
+        Buffer.from(JSON.stringify(messages))
       );
-    });
-
-    if (message) {
-      const content = message.content.toString();
-      const availabilityStatus = JSON.parse(content);
-      console.log("Avail status", availabilityStatus);
-    } else {
-      console.log("No message.");
-    }
-  }
-
-  async reduceItemQuantity(channel, order) {
-    const queue = "itemQuantityReduction";
-
-    await channel.assertQueue(queue);
-    console.log(order);
-    for (const itemId in order) {
-      const message = {
-        itemId,
-        providerId: order[itemId]["providerId"],
-        quantity: order[itemId]["units"],
-      };
-
-      channel.sendToQueue(queue, Buffer.from(JSON.stringify(message)));
       console.log(
-        `Sent item quantity reduction message: ${JSON.stringify(message)}`
+        `Sent item availability check message: ${JSON.stringify(messages)}`
       );
+
+      console.log("Checking availability status");
+
+      await channel.assertQueue(itemAvailabilityStatusQueue, { durable: true });
+
+      const consumerTag = channel.consume(
+        itemAvailabilityStatusQueue,
+        (msg) => {
+          const content = msg.content.toString();
+          const availabilityStatus = JSON.parse(content);
+          console.log("Availability status", availabilityStatus);
+          channel.ack(msg);
+          callback(availabilityStatus);
+        },
+        { noAck: false }
+      );
+
+      if (!consumerTag) {
+        console.log("No message.");
+        callback(false);
+      }
+    } catch (error) {
+      console.error("Error checking item availability:", error);
+      callback(false);
     }
   }
 }

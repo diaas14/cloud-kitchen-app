@@ -33,10 +33,11 @@ app.use("/api/business-profile", businessProfileRoute);
 
 async function startMicroservice() {
   try {
-    const connection = await amqp.connect(rabbitmqUrl, {
-      credentials: amqp.credentials.plain(username, password),
-    });
-    const channel = await connection.createChannel();
+    const { channel } = await rabbitmq.establishConnectionAndChannel(
+      rabbitmqUrl,
+      username,
+      password
+    );
 
     await rabbitmq.consumeMessages(channel);
 
