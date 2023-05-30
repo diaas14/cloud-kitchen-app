@@ -230,6 +230,52 @@ class BusinessProfileController {
         .json({ success: false, message: "Error fetching menu items" });
     }
   }
-}
+  async processTransaction(req, res) {
+    const { cartItems } = req.body;
+    try {
+      const db = admin.firestore();
+      const menuRef = db.collection("menu");
 
+      await db.runTransaction(async (transaction) => {
+        const snapshot = await transaction.get(menuRef);
+        const items = snapshot.docs.reduce((acc, doc) => {
+          acc[doc.id] = doc.data();
+          return acc;
+        }, {});
+
+        for (let i = 0; i < cartItems.length; i++) {
+          const cartItem = cartItems[i];
+          const itemId = cartItem.itemId;
+          const quantity = cartItem.units;
+
+          console.log(
+            `Available quantity: ${items[itemId]?.itemQuantity}, Requested quantity: ${quantity}`
+          );
+
+          if (!items[itemId] || items[itemId].itemQuantity < quantity) {
+            throw Error(`Insufficient quantity for item ${itemId}`);
+          }
+        }
+
+        for (let i = 0; i < cartItems.length; i++) {
+          const cartItem = cartItems[i];
+          const itemId = cartItem.itemId;
+          const quantity = cartItem.units;
+
+          items[itemId].itemQuantity -= quantity;
+        }
+
+        for (const itemId in items) {
+          transaction.set(menuRef.doc(itemId), items[itemId]);
+        }
+      });
+
+      console.log("Transaction completed successfully.");
+      res.status(200).send("Transaction completed successfully.");
+    } catch (error) {
+      console.error("Transaction was unsuccessful.", error.message);
+      res.status(500).send("Transaction was unsuccessful.");
+    }
+  }
+}
 module.exports = BusinessProfileController;

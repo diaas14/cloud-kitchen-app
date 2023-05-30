@@ -8,19 +8,21 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 final FirebaseAuth _auth = FirebaseAuth.instance;
 String? apiUrl = dotenv.env['DEV_API_URL'];
 
-Future<String> placeOrder(
-    Map<String, CartItem> cartItems, String? providerId) async {
+Future<String> placeOrder(CartModel cartModel) async {
   try {
     final uid = _auth.currentUser?.uid;
     final token = await _auth.currentUser?.getIdToken();
 
-    print(cartItems);
+    final cartItems = cartModel.items;
+    final providerId = cartModel.currentProviderId;
+    final price = cartModel.totalCartPrice;
     final response = await http.post(
       Uri.parse('${apiUrl}api/orders/'),
       body: {
         'customerId': uid,
         'providerId': providerId,
         'cartItems': jsonEncode(cartItems),
+        'price': price,
       },
       headers: {
         'Authorization': 'Bearer $token',

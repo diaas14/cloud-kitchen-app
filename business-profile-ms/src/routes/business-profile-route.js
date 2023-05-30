@@ -26,4 +26,6 @@ router.post(
   businessProfileController.updateProfile.bind(businessProfileController)
 );
 
+router.put("/transactions", businessProfileController.processTransaction);
+
 module.exports = router;

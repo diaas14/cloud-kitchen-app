@@ -5,8 +5,6 @@ const multer = require("multer");
 
 const ordersRoute = require("./routes/order-route");
 
-const rabbitmq = require("./rabbitmq");
-
 const app = express();
 const port = process.env.PORT || 4003;
 
@@ -26,24 +24,6 @@ admin.initializeApp({
 
 app.use("/api/orders", ordersRoute);
 
-async function startMicroservice() {
-  try {
-    const { connection, channel } =
-      await rabbitmq.establishConnectionAndChannel();
-
-    app.listen(port, () => {
-      console.log(`Orders microservice running on port ${port}`);
-    });
-  } catch (error) {
-    console.error("Failed to start the app:", error);
-    process.exit(1);
-  }
-}
-
-startMicroservice();
-
-process.on("exit", async () => {
-  const channel = rabbitmq.getChannel();
-  const connection = rabbitmq.getConnection();
-  await rabbitmq.closeConnectionAndChannel(channel, connection);
+app.listen(port, () => {
+  console.log(`Orders microservice running on port ${port}`);
 });

@@ -48,6 +48,13 @@ class CartModel extends ChangeNotifier {
     return total;
   }
 
+  String? get currentProviderId {
+    if (_items.isEmpty) {
+      return null;
+    }
+    return _items.values.first.providerId;
+  }
+
   void addItem(CartItem item) {
     if (_items.isNotEmpty &&
         _items.values.any(
@@ -60,13 +67,6 @@ class CartModel extends ChangeNotifier {
       _items[item.id] = item;
     }
     notifyListeners();
-  }
-
-  String? getCurrentProviderId() {
-    if (_items.isEmpty) {
-      return null;
-    }
-    return _items.values.first.providerId;
   }
 
   void removeItemFromCart(String itemId) {
