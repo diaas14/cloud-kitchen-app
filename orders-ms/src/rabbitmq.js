@@ -12,6 +12,11 @@ async function establishConnectionAndChannel() {
     connection = await amqp.connect(rabbitmqUrl, {
       credentials: amqp.credentials.plain(username, password),
     });
+
+    connection.on("error", (error) => {
+      console.error("RabbitMQ connection error:", error);
+    });
+
     channel = await connection.createChannel();
     console.log("RabbitMQ connection and channel established");
     return { connection, channel };
@@ -20,6 +25,7 @@ async function establishConnectionAndChannel() {
       "Failed to establish RabbitMQ connection and channel:",
       error
     );
+    throw error;
   }
 }
 
@@ -30,6 +36,7 @@ async function closeConnectionAndChannel(channel, connection) {
     console.log("RabbitMQ connection closed");
   } catch (error) {
     console.error("Failed to close RabbitMQ connection:", error);
+    throw error;
   }
 }
 

@@ -62,6 +62,13 @@ class CartModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  String? getCurrentProviderId() {
+    if (_items.isEmpty) {
+      return null;
+    }
+    return _items.values.first.providerId;
+  }
+
   void removeItemFromCart(String itemId) {
     if (_items.containsKey(itemId)) {
       final item = _items[itemId]!;

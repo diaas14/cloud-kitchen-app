@@ -39,7 +39,8 @@ class _CartState extends State<Cart> {
               ),
               TextButton(
                 onPressed: () async {
-                  String res = await placeOrder(cartItems);
+                  String res = await placeOrder(
+                      cartItems, cartModel.getCurrentProviderId());
                   print(res);
                 },
                 child: Text("Place Order"),

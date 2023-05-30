@@ -21,11 +21,12 @@ app.use(upload.any());
 const serviceAccount = `${__dirname}/serviceAccountKey.json`;
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
+  databaseURL: process.env.DB_URL,
 });
 
 app.use("/api/orders", ordersRoute);
 
-async function startApp() {
+async function startMicroservice() {
   try {
     const { connection, channel } =
       await rabbitmq.establishConnectionAndChannel();
@@ -39,7 +40,7 @@ async function startApp() {
   }
 }
 
-startApp();
+startMicroservice();
 
 process.on("exit", async () => {
   const channel = rabbitmq.getChannel();
