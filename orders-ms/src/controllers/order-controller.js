@@ -3,6 +3,7 @@ const rabbitmq = require("../rabbitmq");
 
 const itemAvailabilityCheckQueue = "itemAvailabilityCheck";
 const itemAvailabilityStatusQueue = "itemAvailabilityStatus";
+const itemReductionRequestQueue = "itemReductionRequest";
 
 class OrderController {
   async createOrder(req, res) {
@@ -11,10 +12,9 @@ class OrderController {
       const order = JSON.parse(cartItems);
 
       const channel = rabbitmq.getChannel();
+      await channel.prefetch(1);
 
-      await this.checkItemAvailability(channel, order, (availabilityStatus) => {
-        console.log("It returned!!! ", availabilityStatus);
-      });
+      await this.checkItemAvailability(channel, order, this.reduceItemQuantity);
 
       res.status(201).send();
     } catch (error) {
@@ -53,18 +53,40 @@ class OrderController {
           const availabilityStatus = JSON.parse(content);
           console.log("Availability status", availabilityStatus);
           channel.ack(msg);
-          callback(availabilityStatus);
+          callback(channel, order, availabilityStatus);
         },
         { noAck: false }
       );
 
       if (!consumerTag) {
         console.log("No message.");
-        callback(false);
+        callback(channel, order, false);
       }
     } catch (error) {
       console.error("Error checking item availability:", error);
-      callback(false);
+      callback(channel, order, false);
+    }
+  }
+
+  async reduceItemQuantity(channel, order, availabilityStatus) {
+    console.log("It returned ", availabilityStatus);
+    try {
+      await channel.assertQueue(itemReductionRequestQueue, { durable: true });
+
+      const messages = Object.entries(order).map(([itemId, { units }]) => ({
+        itemId,
+        quantity: units,
+      }));
+
+      await channel.sendToQueue(
+        itemReductionRequestQueue,
+        Buffer.from(JSON.stringify(messages))
+      );
+      console.log(
+        `Sent item reduction request message: ${JSON.stringify(messages)}`
+      );
+    } catch (err) {
+      console.log(err);
     }
   }
 }

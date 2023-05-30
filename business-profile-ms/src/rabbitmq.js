@@ -2,6 +2,7 @@ const admin = require("firebase-admin");
 
 const itemAvailabilityStatusQueue = "itemAvailabilityStatus";
 const itemAvailabilityCheckQueue = "itemAvailabilityCheck";
+const itemReductionRequestQueue = "itemReductionRequest";
 
 async function checkItemAvailabilityInFirebase(messages) {
   const menuRef = admin.firestore().collection("menu");
@@ -47,10 +48,10 @@ async function publishAvailabilityStatus(channel, res) {
   console.log(`Published availability status: ${JSON.stringify(message)}`);
 }
 
-async function consumeMessages(channel) {
+async function consumeAvailabilityMessages(channel) {
   try {
     await channel.assertQueue(itemAvailabilityCheckQueue, { durable: true });
-    await channel.prefetch(0);
+    await channel.prefetch(1);
     await channel.consume(itemAvailabilityCheckQueue, async (message) => {
       if (message !== null) {
         try {
@@ -66,11 +67,47 @@ async function consumeMessages(channel) {
           console.log("Acknowledged");
         } catch (error) {
           console.error("Error processing message:", error);
-          channel.reject(message, false);
+          channel.nack(message, false, false);
         }
       }
     });
-    console.log("Waiting for messages...");
+    console.log("Waiting for availability messages...");
+  } catch (error) {
+    console.error("Error consuming availability messages:", error);
+  }
+}
+
+async function consumeReductionMessages(channel) {
+  try {
+    await channel.assertQueue(itemReductionRequestQueue, { durable: true });
+    await channel.prefetch(1);
+    await channel.consume(itemReductionRequestQueue, async (message) => {
+      if (message !== null) {
+        try {
+          console.log(
+            "Received message from itemReductionRequestQueue:",
+            message.content.toString()
+          );
+          channel.ack(message);
+          console.log("Acknowledged");
+        } catch (error) {
+          console.error("Error processing message from another queue:", error);
+          channel.nack(message, false, false);
+        }
+      }
+    });
+    console.log("Waiting for reduction messages...");
+  } catch (error) {
+    console.error("Error consuming reduction messages:", error);
+  }
+}
+
+async function consumeMessages(channel) {
+  try {
+    await Promise.all([
+      consumeAvailabilityMessages(channel),
+      consumeReductionMessages(channel),
+    ]);
   } catch (error) {
     console.error("Error consuming messages:", error);
   }
