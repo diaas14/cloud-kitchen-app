@@ -2,7 +2,7 @@ const admin = require("firebase-admin");
 
 class UserController {
   async createUser(req, res) {
-    const { userId, email, name, photoUrl, projectId } = req.body;
+    const { userId, email, name, photoUrl } = req.body;
 
     try {
       const newUserRef = admin.firestore().collection("users").doc(userId);
@@ -11,9 +11,7 @@ class UserController {
         name,
         ...(photoUrl && { photoUrl }),
       });
-
-      await admin.auth().setCustomUserClaims(userId, { projectId });
-
+      console.log("Registration complete");
       res.status(201).json({ msg: "Registration complete" });
     } catch (err) {
       res.status(500).send(err);
@@ -32,6 +30,7 @@ class UserController {
         res.status(404).json({ msg: "User not found" });
       } else {
         const userData = userDoc.data();
+        delete userData.userId;
         res.status(200).json(userData);
       }
     } catch (err) {
