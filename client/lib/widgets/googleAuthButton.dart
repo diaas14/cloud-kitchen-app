@@ -1,6 +1,8 @@
+import 'package:client/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:client/services/auth_service.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:provider/provider.dart';
 
 class GoogleAuthButton extends StatefulWidget {
   const GoogleAuthButton({super.key});
@@ -10,8 +12,8 @@ class GoogleAuthButton extends StatefulWidget {
 }
 
 class _GoogleAuthButtonState extends State<GoogleAuthButton> {
-  void signInWithGoogleHandler() async {
-    final result = await signInWithGoogle();
+  void signInWithGoogleHandler(UserProvider userProvider) async {
+    final result = await signInWithGoogle(userProvider);
     Fluttertoast.showToast(
       msg: result,
     );
@@ -21,10 +23,13 @@ class _GoogleAuthButtonState extends State<GoogleAuthButton> {
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     var width = size.width;
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
     return SizedBox(
       width: width / 2,
       child: TextButton(
-        onPressed: signInWithGoogleHandler,
+        onPressed: () {
+          signInWithGoogleHandler(userProvider);
+        },
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[

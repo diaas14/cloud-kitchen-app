@@ -95,7 +95,7 @@ class _FoodProviderState extends State<FoodProvider> {
           Expanded(
             child: MenuList(
               items: _menu,
-              providerId: widget.providerId,
+              providerProfile: widget.profile,
             ),
           ),
         ],

@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'package:client/models/cartModel.dart';
+import 'package:client/models/user.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,11 +25,17 @@ Future<void> main() async {
     print('Error initializing Firebase: $e');
   }
 
+  final userProvider = UserProvider();
+  await userProvider.loadUserData();
+
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider<CartModel>(
           create: (context) => CartModel(),
+        ),
+        ChangeNotifierProvider<UserProvider>(
+          create: (context) => UserProvider(),
         ),
       ],
       child: MyApp(),

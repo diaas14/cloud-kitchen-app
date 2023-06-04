@@ -155,8 +155,15 @@ Future<String> addItemToMenu(
   });
 
   data.forEach((key, value) {
-    request.fields[key] = value.toString();
+    if (key == "itemTags") {
+      request.fields[key] = jsonEncode(value);
+      print(jsonEncode(value).runtimeType);
+    } else {
+      request.fields[key] = value.toString();
+    }
   });
+
+  print(request.fields);
 
   try {
     if (imageFile != null) {

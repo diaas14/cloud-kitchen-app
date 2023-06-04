@@ -1,6 +1,8 @@
+import 'package:client/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:client/services/auth_service.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:provider/provider.dart';
 
 class SignUp extends StatefulWidget {
   final Function toggleView;
@@ -19,7 +21,7 @@ class _SignUpState extends State<SignUp> {
   final _confirmPasswordController = TextEditingController();
   final _nameController = TextEditingController();
 
-  void _signUp(BuildContext context) async {
+  void _signUp(UserProvider userProvider) async {
     if (_formKey.currentState!.validate()) {
       final email = _emailController.text.trim();
       final password = _passwordController.text.trim();
@@ -28,6 +30,7 @@ class _SignUpState extends State<SignUp> {
         name,
         email,
         password,
+        userProvider,
       );
       Fluttertoast.showToast(
         msg: result,
@@ -39,6 +42,7 @@ class _SignUpState extends State<SignUp> {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
     return Container(
       padding: EdgeInsets.all(32.0),
       child: Column(
@@ -200,7 +204,7 @@ class _SignUpState extends State<SignUp> {
                       backgroundColor: Theme.of(context).primaryColor,
                     ),
                     onPressed: () {
-                      _signUp(context);
+                      _signUp(userProvider);
                     },
                     child: Text('Sign Up'),
                   ),

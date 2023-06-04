@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 
 class CartItem {
   final String id;
-  final String providerId;
   final String name;
   final double price;
   final String? imageUrl;
@@ -10,7 +9,6 @@ class CartItem {
 
   CartItem({
     required this.id,
-    required this.providerId,
     required this.name,
     required this.price,
     this.imageUrl,
@@ -20,7 +18,6 @@ class CartItem {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'providerId': providerId,
       'name': name,
       'price': price,
       'imageUrl': imageUrl,
@@ -35,8 +32,10 @@ class CartItem {
 
 class CartModel extends ChangeNotifier {
   final Map<String, CartItem> _items = {};
+  Map<String, dynamic> _providerDetails = {};
 
   Map<String, CartItem> get items => _items;
+  Map<String, dynamic> get providerDetails => _providerDetails;
 
   int get cartItemCount => _items.length;
 
@@ -49,17 +48,19 @@ class CartModel extends ChangeNotifier {
   }
 
   String? get currentProviderId {
-    if (_items.isEmpty) {
+    if (_providerDetails.isEmpty) {
       return null;
     }
-    return _items.values.first.providerId;
+    return _providerDetails["userId"];
   }
 
-  void addItem(CartItem item) {
-    if (_items.isNotEmpty &&
-        _items.values.any(
-            (existingItem) => existingItem.providerId != item.providerId)) {
+  void addItem(CartItem item, Map<String, dynamic> profile) {
+    if (_providerDetails.isNotEmpty &&
+        _providerDetails["userId"] != profile["userId"]) {
       throw Exception("Cannot add items from different food providers.");
+    }
+    if (_items.isEmpty) {
+      _providerDetails = profile;
     }
     if (_items.containsKey(item.id)) {
       _items[item.id]!.units += item.units;
@@ -78,12 +79,16 @@ class CartModel extends ChangeNotifier {
         _items.remove(itemId);
       }
 
+      if (_items.isEmpty) {
+        _providerDetails = {};
+      }
       notifyListeners();
     }
   }
 
   void clearCart() {
     _items.clear();
+    _providerDetails = {};
     notifyListeners();
   }
 }

@@ -1,3 +1,4 @@
+import 'package:client/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
@@ -19,6 +20,8 @@ class _CartState extends State<Cart> {
       body: Consumer<CartModel>(
         builder: (context, cartModel, _) {
           Map<String, CartItem> cartItems = cartModel.items;
+          final userProvider =
+              Provider.of<UserProvider>(context, listen: false);
           if (cartItems.isEmpty) {
             return Center(
               child: Text('No items in the cart'),
@@ -41,7 +44,10 @@ class _CartState extends State<Cart> {
               Text('Price \u20B9${cartModel.totalCartPrice}'),
               TextButton(
                 onPressed: () async {
-                  String res = await placeOrder(cartModel);
+                  print(cartModel);
+                  print(userProvider.userData);
+                  String res =
+                      await placeOrder(cartModel, userProvider.userData);
                   Fluttertoast.showToast(msg: res);
                   cartModel.clearCart();
                 },

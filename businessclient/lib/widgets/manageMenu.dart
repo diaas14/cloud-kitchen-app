@@ -19,22 +19,19 @@ class _ManageMenuState extends State<ManageMenu> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        MenuList(),
-        Align(
-          alignment: Alignment.bottomRight,
-          child: Padding(
-            padding: EdgeInsets.all(16.0),
-            child: FloatingActionButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => AddMenuItem()),
-                );
-              },
-              child: Icon(Icons.add),
-            ),
+        Padding(
+          padding: EdgeInsets.all(16.0),
+          child: IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => AddMenuItem()),
+              );
+            },
+            icon: Icon(Icons.add),
           ),
         ),
+        Expanded(child: MenuList()),
       ],
     );
   }

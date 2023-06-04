@@ -20,7 +20,7 @@ class _MenuState extends State<Menu> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(40.0),
@@ -38,16 +38,17 @@ class _MenuState extends State<Menu> {
                               fit: BoxFit.cover,
                             ),
                     ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(widget.profile['businessName'],
-                            style: TextStyle(fontSize: 24)),
-                        Text(
-                          '${widget.profile['address']['street']}, ${widget.profile['address']['subLocality']}, ${widget.profile['address']['locality']}, ${widget.profile['address']['country']}',
-                        ),
-                      ],
-                    ),
+                    if (widget.profile['address'] != null)
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(widget.profile['businessName'],
+                              style: TextStyle(fontSize: 24)),
+                          Text(
+                            '${widget.profile['address']['street']}, ${widget.profile['address']['subLocality']}, ${widget.profile['address']['locality']}, ${widget.profile['address']['country']}',
+                          ),
+                        ],
+                      ),
                   ],
                 ),
                 Text(

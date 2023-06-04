@@ -1,6 +1,8 @@
+import 'package:client/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:client/services/profile_service.dart';
 import 'package:client/pages/editProfile.dart';
+import 'package:provider/provider.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -22,16 +24,9 @@ class _ProfileState extends State<Profile> {
 
   @override
   Widget build(BuildContext context) {
-    return
-        // Scaffold(
-        // appBar: AppBar(
-        //   title: Text("Profile"),
-        //   centerTitle: true,
-        //   backgroundColor: Color.fromARGB(255, 36, 151, 164),
-        //   elevation: 0,
-        // ),
-        // body:
-        FutureBuilder<Map<String, dynamic>>(
+    final userProvider = Provider.of<UserProvider>(context);
+    print('State user data ${userProvider.userData}');
+    return FutureBuilder<Map<String, dynamic>>(
       future: _profileData,
       builder: (context, snapshot) {
         if (snapshot.hasData) {

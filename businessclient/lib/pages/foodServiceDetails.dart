@@ -24,8 +24,8 @@ class _FoodServiceDetailsState extends State<FoodServiceDetails> {
     if (_formKey.currentState!.validate()) {
       final data = <String, dynamic>{};
       data['businessName'] = _nameController.text.trim();
-      data['position'] = position;
-      data['place'] = place;
+      if (position != null) data['position'] = position;
+      if (place != null) data['place'] = place;
       final result = await updateBusinessData(data, null);
       Fluttertoast.showToast(
         msg: result,

@@ -19,7 +19,7 @@ class _GoogleAuthButtonState extends State<GoogleAuthButton> {
       msg: result,
     );
     if (mounted) {
-      Navigator.push(context, MaterialPageRoute(builder: (context) {
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
         if (result == 'registration complete') {
           return FoodServiceDetails();
         } else if (result == 'login success') {

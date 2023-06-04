@@ -5,9 +5,9 @@ import 'package:client/models/cartModel.dart';
 
 class MenuList extends StatefulWidget {
   final List<dynamic> items;
-  final String providerId;
+  final Map<String, dynamic> providerProfile;
 
-  const MenuList({Key? key, required this.items, required this.providerId})
+  const MenuList({Key? key, required this.items, required this.providerProfile})
       : super(key: key);
 
   @override
@@ -19,14 +19,13 @@ class _MenuListState extends State<MenuList> {
       String? itemImgUrl, CartModel cart) {
     final item = CartItem(
       id: itemId,
-      providerId: widget.providerId,
       name: itemName,
       price: itemPrice,
       imageUrl: itemImgUrl,
       units: 1,
     );
     try {
-      cart.addItem(item);
+      cart.addItem(item, widget.providerProfile);
     } catch (e) {
       showDialog(
         context: context,

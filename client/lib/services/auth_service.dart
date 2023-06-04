@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:client/models/user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:http/http.dart' as http;
@@ -8,8 +9,8 @@ import 'package:google_sign_in/google_sign_in.dart';
 final FirebaseAuth _auth = FirebaseAuth.instance;
 String? apiUrl = dotenv.env['DEV_API_URL'];
 
-Future<String> registerWithEmailPassword(
-    String name, String email, String password) async {
+Future<String> registerWithEmailPassword(String name, String email,
+    String password, UserProvider userProvider) async {
   try {
     UserCredential credential = await _auth.createUserWithEmailAndPassword(
       email: email,
@@ -23,12 +24,13 @@ Future<String> registerWithEmailPassword(
         'userId': user?.uid,
         'name': name,
         'email': user?.email,
-        'projectId': Firebase.app().options.projectId,
       },
       headers: {
         'Authorization': 'Bearer $token',
       },
     );
+    await userProvider.fetchUserProfileData();
+    await userProvider.saveUserData(userProvider.userData!);
     return (response.statusCode == 201) ? 'success' : response.body;
   } on FirebaseAuthException catch (e) {
     return e.code;
@@ -37,12 +39,15 @@ Future<String> registerWithEmailPassword(
   }
 }
 
-Future<String> signInWithEmailPassword(String email, String password) async {
+Future<String> signInWithEmailPassword(
+    String email, String password, UserProvider userProvider) async {
   try {
     await _auth.signInWithEmailAndPassword(
       email: email,
       password: password,
     );
+    await userProvider.fetchUserProfileData();
+    await userProvider.saveUserData(userProvider.userData!);
     return 'success';
   } on FirebaseAuthException catch (e) {
     return e.code;
@@ -51,7 +56,7 @@ Future<String> signInWithEmailPassword(String email, String password) async {
   }
 }
 
-Future<String> signInWithGoogle() async {
+Future<String> signInWithGoogle(UserProvider userProvider) async {
   try {
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
     final GoogleSignInAuthentication? googleAuth =
@@ -77,14 +82,16 @@ Future<String> signInWithGoogle() async {
           'name': googleUser?.displayName,
           'email': user?.email,
           if (googleUser?.photoUrl != null) 'photoUrl': googleUser?.photoUrl,
-          'projectId': Firebase.app().options.projectId,
         },
         headers: {
           'Authorization': 'Bearer $token',
         },
       );
-      if (response.statusCode == 201) return response.body;
+      await userProvider.fetchUserProfileData();
+      await userProvider.saveUserData(userProvider.userData!);
+      return (response.statusCode == 201) ? 'success' : response.body;
     }
+    await userProvider.fetchUserProfileData();
     return 'success';
   } catch (e) {
     return e.toString();
