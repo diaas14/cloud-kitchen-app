@@ -15,6 +15,13 @@ router.post(
   businessProfileController.addItemToMenu.bind(businessProfileController)
 );
 
+// TODO
+// use to edit menu item
+router.put(
+  "/menu/:itemId",
+  businessProfileController.editMenuItem.bind(businessProfileController)
+);
+
 router.post(
   "/images/:userId",
   businessProfileController.uploadImages.bind(businessProfileController)

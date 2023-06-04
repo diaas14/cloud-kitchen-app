@@ -101,7 +101,6 @@ class BusinessProfileController {
     }
   }
 
-  // show profile
   async fetchProfile(req, res) {
     const userId = req.params.userId;
     try {
@@ -122,7 +121,6 @@ class BusinessProfileController {
     }
   }
 
-  // used by client app
   async fetchAllProfiles(req, res) {
     console.log("Request receieved");
     try {
@@ -169,8 +167,11 @@ class BusinessProfileController {
         itemDescription = null,
         itemPrice = null,
         itemQuantity = null,
+        itemTags = null,
       } = req.body;
 
+      console.log(itemTags);
+      const itemTagsList = JSON.parse(itemTags);
       const menuRef = admin.firestore().collection("menu");
       const newItemRef = menuRef.doc();
 
@@ -189,6 +190,7 @@ class BusinessProfileController {
         ...(itemDescription && { itemDescription }),
         ...(itemPrice && { itemPrice: parseFloat(itemPrice) }),
         ...(itemQuantity && { itemQuantity: parseInt(itemQuantity) }),
+        ...(itemTags && { itemTags: itemTagsList }),
       };
 
       await newItemRef.set(newItem);
@@ -230,6 +232,55 @@ class BusinessProfileController {
         .json({ success: false, message: "Error fetching menu items" });
     }
   }
+
+  async editMenuItem(req, res) {
+    try {
+      const itemId = req.params.itemId;
+
+      const {
+        itemName = null,
+        itemDescription = null,
+        itemPrice = null,
+        itemQuantity = null,
+      } = req.body;
+
+      const menuRef = admin.firestore().collection("menu");
+      const itemDoc = await menuRef.doc(itemId).get();
+
+      if (!itemDoc.exists) {
+        return res.status(404).json({ msg: "Item not found" });
+      }
+
+      var imageUrl = null;
+
+      if (req.files) {
+        imageUrl = req.files[0]
+          ? await this.uploadImageToStorage.call(this, req.files[0])
+          : null;
+      }
+
+      const updatedFields = {
+        ...(imageUrl && { itemImgUrl: imageUrl }),
+        ...(itemName && { itemName }),
+        ...(itemDescription && { itemDescription }),
+        ...(itemPrice && { itemPrice: parseFloat(itemPrice) }),
+        ...(itemQuantity && { itemQuantity: parseInt(itemQuantity) }),
+      };
+
+      await itemRef.update(updatedFields);
+
+      res
+        .status(200)
+        .json({ success: true, message: "Item updated in menu collection" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({
+        success: false,
+        message: "Error editing item in menu collection",
+      });
+    }
+  }
+
   async processTransaction(req, res) {
     const { cartItems } = req.body;
     try {
