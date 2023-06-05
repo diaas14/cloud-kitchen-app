@@ -1,4 +1,5 @@
 const admin = require("firebase-admin");
+const { sendMessageToQueue } = require("../rabbitmq");
 
 class UserController {
   async createUser(req, res) {
@@ -51,7 +52,6 @@ class UserController {
         const bucket = admin.storage().bucket();
         const fileName = `${Date.now()}_${file.originalname}`;
         const fileUpload = bucket.file(fileName);
-
         const blobStream = fileUpload.createWriteStream({
           metadata: {
             contentType: file.mimetype,
@@ -63,13 +63,19 @@ class UserController {
         });
 
         blobStream.on("finish", () => {
-          fileUpload.makePublic((err) => {
+          fileUpload.makePublic(async (err) => {
             if (err) {
               return res.status(500).send(err);
             }
             const publicUrl = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
             imageURL = publicUrl;
-            userDocRef.update({ photoUrl: imageURL, ...req.body });
+            await userDocRef.update({ photoUrl: imageURL, ...req.body });
+            sendMessageToQueue("customerProfileUpdated", {
+              customerId: userId,
+              updatedFields: { photoUrl: imageURL, ...req.body },
+            }).catch((err) => {
+              console.error("Error sending message to queue:", err);
+            });
             return res.status(200).json({
               message: "User successfully updated.",
             });
@@ -79,6 +85,12 @@ class UserController {
         blobStream.end(file.buffer);
       } else {
         await userDocRef.update(req.body);
+        sendMessageToQueue("customerProfileUpdated", {
+          customerId: userId,
+          updatedFields: req.body,
+        }).catch((err) => {
+          console.error("Error sending message to queue:", err);
+        });
         res.status(200).json("User successfully updated.");
       }
     } catch (err) {

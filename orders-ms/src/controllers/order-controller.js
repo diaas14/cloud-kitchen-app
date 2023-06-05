@@ -41,8 +41,9 @@ class OrderController {
         providerId: providerId,
         items: Object.values(parsedCartItems),
         price: parseFloat(price),
-        customerData: parsedCustomerData,
+        customerDetails: parsedCustomerData,
         providerDetails: parsedProviderDetails,
+        timestamp: admin.firestore.FieldValue.serverTimestamp(),
       };
 
       await newOrderRef.set(newOrder);
@@ -106,6 +107,54 @@ class OrderController {
     } catch (error) {
       console.error("Error fetching orders:", error);
       return res.status(500).json({ message: "Internal server error." });
+    }
+  }
+
+  async updateProviderDataInOrder(messageContent) {
+    try {
+      const { providerId, updatedFields } = JSON.parse(messageContent);
+      const ordersRef = admin.firestore().collection("orders");
+      const querySnapshot = await ordersRef
+        .where("providerId", "==", providerId)
+        .get();
+
+      const batch = admin.firestore().batch();
+      querySnapshot.forEach((doc) => {
+        const orderRef = ordersRef.doc(doc.id);
+        const providerDetails = doc.data().providerDetails;
+        const updatedProviderDetails = { ...providerDetails, ...updatedFields };
+        batch.update(orderRef, { providerDetails: updatedProviderDetails });
+      });
+
+      await batch.commit();
+
+      console.log("Order documents updated successfully.");
+    } catch (error) {
+      console.error("Error updating order documents:", error);
+    }
+  }
+
+  async updateCustomerDataInOrder(messageContent) {
+    try {
+      const { customerId, updatedFields } = JSON.parse(messageContent);
+      const ordersRef = admin.firestore().collection("orders");
+      const querySnapshot = await ordersRef
+        .where("customerId", "==", customerId)
+        .get();
+
+      const batch = admin.firestore().batch();
+      querySnapshot.forEach((doc) => {
+        const orderRef = ordersRef.doc(doc.id);
+        const customerDetails = doc.data().customerDetails;
+        const updatedCustomerDetails = { ...customerDetails, ...updatedFields };
+        batch.update(orderRef, { customerDetails: updatedCustomerDetails });
+      });
+
+      await batch.commit();
+
+      console.log("Order documents updated successfully.");
+    } catch (error) {
+      console.error("Error updating order documents:", error);
     }
   }
 }

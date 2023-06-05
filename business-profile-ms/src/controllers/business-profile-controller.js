@@ -1,5 +1,5 @@
 const admin = require("firebase-admin");
-const uuid = require("uuid");
+const { sendMessageToQueue } = require("../rabbitmq");
 
 class BusinessProfileController {
   async createProfile(req, res) {
@@ -93,6 +93,13 @@ class BusinessProfileController {
       };
       console.log(data);
       await userDocRef.update(data);
+
+      sendMessageToQueue("providerProfileUpdated", {
+        providerId: userId,
+        updatedFields: data,
+      }).catch((err) => {
+        console.error("Error sending message to queue:", err);
+      });
 
       res.status(200).json("User successfully updated.");
     } catch (err) {

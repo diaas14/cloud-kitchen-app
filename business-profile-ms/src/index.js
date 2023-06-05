@@ -2,6 +2,7 @@ const express = require("express");
 const admin = require("firebase-admin");
 const bodyParser = require("body-parser");
 const multer = require("multer");
+const rabbitmq = require("./rabbitmq");
 
 const businessProfileRoute = require("./routes/business-profile-route");
 
@@ -25,6 +26,13 @@ admin.initializeApp({
 
 app.use("/api/business-profile", businessProfileRoute);
 
-app.listen(port, () => {
-  console.log(`Business profile microservice running on port ${port}`);
-});
+rabbitmq
+  .connect()
+  .then(() => {
+    app.listen(port, () => {
+      console.log(`Business profile microservice running on port ${port}`);
+    });
+  })
+  .catch((error) => {
+    console.error("Error connecting to RabbitMQ:", error);
+  });
