@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:businessclient/widgets/quantitySelector.dart';
 import 'package:businessclient/services/profile_service.dart';
