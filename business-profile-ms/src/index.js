@@ -5,6 +5,7 @@ const multer = require("multer");
 const rabbitmq = require("./rabbitmq");
 
 const businessProfileRoute = require("./routes/business-profile-route");
+const menuRoute = require("./routes/menu-route");
 
 const app = express();
 const port = process.env.PORT || 4001;
@@ -25,6 +26,7 @@ admin.initializeApp({
 });
 
 app.use("/api/business-profile", businessProfileRoute);
+app.use("/api/business-profile/menu", menuRoute);
 
 rabbitmq
   .connect()
