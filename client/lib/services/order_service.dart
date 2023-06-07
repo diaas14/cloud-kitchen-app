@@ -51,3 +51,20 @@ Future<String> placeOrder(
     return e.toString();
   }
 }
+
+Future<List<Map<String, dynamic>>> fetchOrders() async {
+  final userId = _auth.currentUser?.uid;
+  final token = await _auth.currentUser?.getIdToken();
+  final response = await http.get(
+    Uri.parse('${apiUrl}api/orders/user/${userId}'),
+    headers: {
+      'Authorization': 'Bearer $token',
+    },
+  );
+  if (response.statusCode == 200) {
+    final jsonOrders = jsonDecode(response.body) as List<dynamic>;
+    return jsonOrders.map((order) => Map<String, dynamic>.from(order)).toList();
+  } else {
+    throw Exception('Failed to fetch orders');
+  }
+}

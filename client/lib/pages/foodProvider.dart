@@ -1,24 +1,21 @@
 import 'package:client/models/cartModel.dart';
 import 'package:client/pages/cart.dart';
+import 'package:client/widgets/foodProviderProfile.dart';
+import 'package:client/widgets/menuItemCard.dart';
 import 'package:flutter/material.dart';
-import 'package:client/pages/profile.dart';
-import 'package:client/widgets/menu.dart';
-import 'package:client/widgets/menuList.dart';
 import 'package:provider/provider.dart';
 import 'package:client/services/business_service.dart';
 
 class FoodProvider extends StatefulWidget {
-  final String providerId;
   final Map<String, dynamic> profile;
-  const FoodProvider(
-      {super.key, required this.profile, required this.providerId});
+  const FoodProvider({super.key, required this.profile});
 
   @override
   State<FoodProvider> createState() => _FoodProviderState();
 }
 
 class _FoodProviderState extends State<FoodProvider> {
-  List<dynamic> _menu = [];
+  List<Map<String, dynamic>> _menu = [];
 
   @override
   void initState() {
@@ -27,7 +24,7 @@ class _FoodProviderState extends State<FoodProvider> {
   }
 
   Future<void> initAsync() async {
-    _menu = await fetchMenu(widget.providerId);
+    _menu = await fetchMenu(widget.profile["userId"]);
     setState(() {});
   }
 
@@ -37,7 +34,7 @@ class _FoodProviderState extends State<FoodProvider> {
       appBar: AppBar(
         title: Text("Menu"),
         centerTitle: true,
-        backgroundColor: Color.fromARGB(255, 36, 151, 164),
+        backgroundColor: Color.fromARGB(190, 61, 135, 118),
         elevation: 0,
         actions: [
           Row(
@@ -89,16 +86,106 @@ class _FoodProviderState extends State<FoodProvider> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          Menu(profile: widget.profile),
-          Expanded(
-            child: MenuList(
-              items: _menu,
-              providerProfile: widget.profile,
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            FoodProviderProfile(profile: widget.profile),
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(5),
+              ),
+              padding: EdgeInsets.symmetric(vertical: 10.0),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20.0),
+                      child: Text(
+                        "Menu Items",
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.grey[600],
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    ListView.builder(
+                      physics: NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: _menu.length,
+                      itemBuilder: (context, index) {
+                        final menuItem = _menu[index];
+                        return MenuItemCard(
+                          item: menuItem,
+                          providerProfile: widget.profile,
+                        );
+                      },
+                    ),
+                  ]),
             ),
-          ),
-        ],
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.info,
+                          size: 18,
+                          color: Color.fromARGB(190, 61, 135, 118),
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          "About",
+                          style: TextStyle(
+                            color: Colors.grey[600],
+                            fontSize: 16,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 26,
+                          child: widget.profile.containsKey("photoUrl")
+                              ? ClipOval(
+                                  child: Image.network(
+                                    widget.profile["photoUrl"],
+                                    fit: BoxFit.cover,
+                                  ),
+                                )
+                              : IconTheme(
+                                  data: IconThemeData(
+                                    size: 24,
+                                  ),
+                                  child: Icon(
+                                    Icons.person,
+                                  ),
+                                ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(widget.profile['name'],
+                                  style: TextStyle(fontSize: 24)),
+                              Text(widget.profile['email']),
+                            ],
+                          ),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

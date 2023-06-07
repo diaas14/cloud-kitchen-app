@@ -83,9 +83,12 @@ class _SignUpState extends State<SignUp> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: TextFormField(
-                    validator: ((value) {
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your name';
+                      }
                       return null;
-                    }),
+                    },
                     decoration: InputDecoration(
                       border: InputBorder.none,
                       labelText: 'Name',

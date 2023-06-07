@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:client/pages/searchPage.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -47,17 +49,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Welcome to',
-                    style: TextStyle(
-                      fontSize: 32,
-                      fontFamily: 'Cabin',
-                      color: Colors.white,
+                    'Indulge in Culinary Delights with',
+                    style: GoogleFonts.bebasNeue(
+                      fontSize: 34,
                     ),
                   ),
                   Text(
                     'Kairuchi',
                     style: TextStyle(
-                      fontSize: 64,
+                      fontSize: 78,
                       fontFamily: 'Cabin',
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
@@ -89,7 +89,42 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ),
-        // Empty space for the scrollable content below
+        SizedBox(
+          height: 25,
+        ),
+        GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => SearchPage()),
+            );
+          },
+          child: Container(
+            margin: EdgeInsets.all(10.0),
+            padding: EdgeInsets.all(15.0),
+            decoration: BoxDecoration(
+              color: Color.fromARGB(255, 234, 244, 241),
+              borderRadius: BorderRadius.circular(20.0),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.5),
+                  spreadRadius: 1,
+                  blurRadius: 5,
+                  offset: Offset(0, 2), // changes the position of the shadow
+                ),
+              ],
+            ),
+            child: Row(
+              children: const [
+                Icon(Icons.search),
+                SizedBox(width: 10.0),
+                Expanded(
+                  child: Text('Search "Dosa"'),
+                ),
+              ],
+            ),
+          ),
+        ),
       ],
     );
   }

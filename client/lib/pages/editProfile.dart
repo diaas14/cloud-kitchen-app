@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:client/services/profile_service.dart';
@@ -13,10 +15,9 @@ class EditProfile extends StatefulWidget {
 }
 
 class _EditProfileState extends State<EditProfile> {
+  final _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
   bool _isNameChanged = false;
-  bool _isEmailChanged = false;
   XFile? _imageFile;
 
   Future _pickImage() async {
@@ -32,19 +33,17 @@ class _EditProfileState extends State<EditProfile> {
   }
 
   _submitForm() async {
-    final data = <String, dynamic>{};
+    if (_formKey.currentState!.validate()) {
+      final data = <String, dynamic>{};
 
-    if (_nameController.text.trim() != widget.profile['name']) {
-      data['name'] = _nameController.text.trim();
-    }
+      if (_nameController.text.trim() != widget.profile['name']) {
+        data['name'] = _nameController.text.trim();
+      }
 
-    if (_emailController.text.trim() != widget.profile['email']) {
-      data['email'] = _emailController.text.trim();
-    }
-
-    if (data.isNotEmpty || _imageFile != null) {
-      final res = await updateProfile(data, _imageFile);
-      Fluttertoast.showToast(msg: res);
+      if (data.isNotEmpty || _imageFile != null) {
+        final res = await updateProfile(data, _imageFile);
+        Fluttertoast.showToast(msg: res);
+      }
     }
   }
 
@@ -52,7 +51,6 @@ class _EditProfileState extends State<EditProfile> {
   void initState() {
     super.initState();
     _nameController.text = widget.profile['name'] ?? '';
-    _emailController.text = widget.profile['email'] ?? '';
   }
 
   @override
@@ -61,116 +59,98 @@ class _EditProfileState extends State<EditProfile> {
       appBar: AppBar(
         title: Text("Edit Profile"),
         centerTitle: true,
-        backgroundColor: Color.fromARGB(255, 21, 120, 131),
+        backgroundColor: Color.fromARGB(190, 61, 135, 118),
         elevation: 0,
       ),
       body: Container(
         padding: EdgeInsets.all(15),
-        child: Column(
-          children: [
-            Stack(
-              alignment: Alignment.center,
-              children: [
-                CircleAvatar(
-                  radius: 60,
-                  child: widget.profile.containsKey("photoUrl")
-                      ? ClipOval(
-                          child: ColorFiltered(
-                            colorFilter: ColorFilter.mode(
-                              Colors.black
-                                  .withOpacity(0.5), // Adjust opacity as needed
-                              BlendMode.darken,
-                            ),
-                            child: Image.network(
-                              widget.profile["photoUrl"],
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              Stack(
+                alignment: Alignment.center,
+                children: [
+                  CircleAvatar(
+                    radius: 60,
+                    child: (_imageFile != null)
+                        ? ClipOval(
+                            child: Image.file(
+                              File(_imageFile!.path),
                               fit: BoxFit.cover,
                             ),
-                          ),
-                        )
-                      : IconTheme(
-                          data: IconThemeData(
-                            size: 55,
-                          ),
-                          child: Icon(
-                            Icons.person,
-                          ),
-                        ),
-                ),
-                IconButton(
-                  icon: Icon(
-                    Icons.add_a_photo,
-                    color: Colors.white,
-                    size: 35,
+                          )
+                        : widget.profile.containsKey("photoUrl")
+                            ? ClipOval(
+                                child: ColorFiltered(
+                                  colorFilter: ColorFilter.mode(
+                                    Colors.black.withOpacity(
+                                        0.5), // Adjust opacity as needed
+                                    BlendMode.darken,
+                                  ),
+                                  child: Image.network(
+                                    widget.profile["photoUrl"],
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              )
+                            : IconTheme(
+                                data: IconThemeData(
+                                  size: 55,
+                                ),
+                                child: Icon(
+                                  Icons.person,
+                                ),
+                              ),
                   ),
-                  onPressed: _pickImage,
+                  IconButton(
+                    icon: Icon(
+                      Icons.add_a_photo,
+                      color: Colors.white,
+                      size: 35,
+                    ),
+                    onPressed: _pickImage,
+                  ),
+                ],
+              ),
+              Container(
+                margin: EdgeInsets.fromLTRB(0, 0, 0, 12),
+                padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Color(0x7fffffff),
+                  borderRadius: BorderRadius.circular(10),
                 ),
-              ],
-            ),
-            Container(
-              margin: EdgeInsets.fromLTRB(0, 0, 0, 12),
-              padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Color(0x7fffffff),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: TextFormField(
-                validator: ((value) {
-                  return null;
-                }),
-                decoration: InputDecoration(
-                  border: UnderlineInputBorder(),
-                  labelText: 'Name',
-                  hintText: 'Enter your Name',
+                child: TextFormField(
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your name';
+                    }
+                    return null;
+                  },
+                  decoration: InputDecoration(
+                    border: UnderlineInputBorder(),
+                    labelText: 'Name',
+                    hintText: 'Enter your Name',
+                  ),
+                  controller: _nameController,
+                  onChanged: (value) {
+                    setState(() {
+                      _isNameChanged = value.trim() != widget.profile["name"];
+                    });
+                  },
                 ),
-                controller: _nameController,
-                onChanged: (value) {
-                  setState(() {
-                    _isNameChanged = value.trim() != widget.profile["name"];
-                  });
-                },
               ),
-            ),
-            Container(
-              margin: EdgeInsets.fromLTRB(0, 0, 0, 12),
-              padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Color(0x7fffffff),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: TextFormField(
-                validator: ((value) {
-                  final emailRegExp =
-                      RegExp(r'^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+');
-                  if (!emailRegExp.hasMatch(value!)) {
-                    return 'Enter valid Email';
-                  }
-                  return null;
-                }),
-                decoration: InputDecoration(
-                  border: UnderlineInputBorder(),
-                  labelText: 'Email',
-                  hintText: 'Enter your Email',
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).primaryColor,
                 ),
-                controller: _emailController,
-                onChanged: (value) {
-                  setState(() {
-                    _isEmailChanged = value.trim() != widget.profile["email"];
-                  });
-                },
+                onPressed:
+                    _imageFile != null || _isNameChanged ? _submitForm : null,
+                child: Text('Save Changes'),
               ),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).primaryColor,
-              ),
-              onPressed: _imageFile != null || _isNameChanged || _isEmailChanged
-                  ? _submitForm
-                  : null,
-              child: Text('Save Changes'),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

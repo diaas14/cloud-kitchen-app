@@ -126,14 +126,15 @@ class MapInterfaceState extends State<MapInterface> {
                 markerId: MarkerId(providerLocation.toString()),
                 position: LatLng(
                     providerLocation.latitude, providerLocation.longitude),
-                icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueCyan),
+                icon: BitmapDescriptor.defaultMarkerWithHue(
+                    BitmapDescriptor.hueCyan),
                 infoWindow: InfoWindow(title: providerName),
                 onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
                           builder: (context) => FoodProvider(
-                              profile: providerProfile,
-                              providerId: providerID)),
+                                profile: providerProfile,
+                              )),
                     )));
           } else {
             markersToDisplay.add(Marker(
@@ -147,8 +148,8 @@ class MapInterfaceState extends State<MapInterface> {
                       context,
                       MaterialPageRoute(
                           builder: (context) => FoodProvider(
-                              profile: providerProfile,
-                              providerId: providerID)),
+                                profile: providerProfile,
+                              )),
                     )));
           }
           setState(() {});

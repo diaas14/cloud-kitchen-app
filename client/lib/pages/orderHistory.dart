@@ -1,14 +1,15 @@
+import 'package:client/pages/order.dart';
 import 'package:flutter/material.dart';
-import 'package:businessclient/services/orders_service.dart';
+import 'package:client/services/order_service.dart';
 
-class Orders extends StatefulWidget {
-  const Orders({super.key});
+class OrderHistory extends StatefulWidget {
+  const OrderHistory({super.key});
 
   @override
-  State<Orders> createState() => _OrdersState();
+  State<OrderHistory> createState() => _OrderHistoryState();
 }
 
-class _OrdersState extends State<Orders> {
+class _OrderHistoryState extends State<OrderHistory> {
   List<Map<String, dynamic>> _orders = [];
 
   @override
@@ -25,7 +26,10 @@ class _OrdersState extends State<Orders> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Order History")),
+      appBar: AppBar(
+        title: Text("Order History"),
+        backgroundColor: Color.fromARGB(190, 61, 135, 118),
+      ),
       body: ListView.builder(
         itemCount: _orders.length,
         itemBuilder: (context, index) {
@@ -34,7 +38,12 @@ class _OrdersState extends State<Orders> {
               order["timestamp"]["_seconds"] * 1000 +
                   order["timestamp"]["_nanoseconds"] ~/ 1000000);
           return GestureDetector(
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => Order(order: order)),
+              );
+            },
             child: Card(
               elevation: 3,
               margin: EdgeInsets.all(10),
@@ -62,16 +71,16 @@ class _OrdersState extends State<Orders> {
                       child: ListTile(
                         leading: CircleAvatar(
                           backgroundImage:
-                              order['customerDetails']['photoUrl'] != null
+                              order['providerDetails']['imageUrl'] != null
                                   ? NetworkImage(
-                                      order['customerDetails']['photoUrl'])
+                                      order['providerDetails']['imageUrl'])
                                   : AssetImage('assets/icons/kairuchi_icon.png')
                                       as ImageProvider<Object>,
                         ),
                         title: Text(
-                          order['customerDetails']['name'],
+                          order['providerDetails']['businessName'],
                         ),
-                        subtitle: Text(order['customerrDetails']['email']),
+                        subtitle: Text(order['providerDetails']['email']),
                       ),
                     ),
                     SizedBox(height: 8.0),

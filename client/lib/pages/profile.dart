@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:client/services/profile_service.dart';
 import 'package:client/pages/editProfile.dart';
 import 'package:provider/provider.dart';
+import 'package:client/pages/orderHistory.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -65,35 +66,50 @@ class _ProfileState extends State<Profile> {
                           children: [
                             Text(profile['name'],
                                 style: TextStyle(fontSize: 24)),
+                            SizedBox(height: 8.0),
                             Text(profile['email']),
-                            ElevatedButton(
-                              child: RichText(
-                                text: TextSpan(
-                                  children: const [
-                                    TextSpan(text: "Edit "),
-                                    WidgetSpan(
-                                      child: Icon(
-                                        Icons.edit,
-                                        size: 16,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          EditProfile(profile: profile)),
-                                );
-                              },
-                            ),
                           ],
                         ),
                       ),
                     ],
                   ),
+                ),
+                GestureDetector(
+                  child: Card(
+                    child: Container(
+                      width: MediaQuery.of(context).size.width,
+                      padding: const EdgeInsets.all(20.0),
+                      child: Text(
+                        'Edit User Profile',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => EditProfile(profile: profile)),
+                    );
+                  },
+                ),
+                GestureDetector(
+                  child: Card(
+                    child: Container(
+                      width: MediaQuery.of(context).size.width,
+                      padding: const EdgeInsets.all(20.0),
+                      child: Text(
+                        'View Orders',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => OrderHistory()),
+                    );
+                  },
                 ),
               ],
             ),
@@ -106,7 +122,6 @@ class _ProfileState extends State<Profile> {
           );
         }
       },
-      // ),
     );
   }
 }

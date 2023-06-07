@@ -39,20 +39,14 @@ class _HomeState extends State<Home> {
       appBar: AppBar(
         title: Text("Home"),
         centerTitle: true,
-        backgroundColor: Color.fromARGB(110, 255, 255, 255),
+        backgroundColor: Color.fromARGB(190, 61, 135, 118),
         elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-            bottomLeft: Radius.circular(30),
-            bottomRight: Radius.circular(30),
-          ),
-        ),
         actions: [
           Row(
             children: [
               IconButton(
                 icon: Icon(Icons.logout),
-                color: Color.fromARGB(190, 61, 135, 118),
+                color: Colors.white,
                 onPressed: () async {
                   if (await GoogleSignIn().isSignedIn()) {
                     await GoogleSignIn().signOut();
@@ -67,7 +61,7 @@ class _HomeState extends State<Home> {
                     children: [
                       IconButton(
                         icon: Icon(Icons.shopping_cart),
-                        color: Color.fromARGB(190, 61, 135, 118),
+                        color: Colors.white,
                         onPressed: () {
                           Navigator.push(
                             context,
@@ -146,15 +140,6 @@ class _HomeState extends State<Home> {
                                       color: Color.fromARGB(190, 61, 135, 118),
                                     ))
                                   : null,
-                              // gradient: i == _selectedItem
-                              //     ? LinearGradient(
-                              //         colors: [
-                              //             Color(0xbf8fd1c2),
-                              //             Color.fromARGB(255, 255, 255, 255)
-                              //           ],
-                              //         begin: Alignment.topCenter,
-                              //         end: Alignment.bottomCenter)
-                              //     : null,
                             ),
                             child: Icon(
                               _icons[i],

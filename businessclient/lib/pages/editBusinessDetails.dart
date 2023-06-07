@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:businessclient/services/location_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -109,28 +111,35 @@ class _EditBusinessDetailsState extends State<EditBusinessDetails> {
               children: [
                 CircleAvatar(
                   radius: 60,
-                  child: widget.profile.containsKey("businessLogoUrl")
+                  child: (_imageFile != null)
                       ? ClipOval(
-                          child: ColorFiltered(
-                            colorFilter: ColorFilter.mode(
-                              Colors.black
-                                  .withOpacity(0.5), // Adjust opacity as needed
-                              BlendMode.darken,
-                            ),
-                            child: Image.network(
-                              widget.profile["businessLogoUrl"],
-                              fit: BoxFit.cover,
-                            ),
+                          child: Image.file(
+                            File(_imageFile!.path),
+                            fit: BoxFit.cover,
                           ),
                         )
-                      : IconTheme(
-                          data: IconThemeData(
-                            size: 55,
-                          ),
-                          child: Icon(
-                            Icons.person,
-                          ),
-                        ),
+                      : widget.profile.containsKey("businessLogoUrl")
+                          ? ClipOval(
+                              child: ColorFiltered(
+                                colorFilter: ColorFilter.mode(
+                                  Colors.black.withOpacity(
+                                      0.5), // Adjust opacity as needed
+                                  BlendMode.darken,
+                                ),
+                                child: Image.network(
+                                  widget.profile["businessLogoUrl"],
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            )
+                          : IconTheme(
+                              data: IconThemeData(
+                                size: 55,
+                              ),
+                              child: Icon(
+                                Icons.person,
+                              ),
+                            ),
                 ),
                 IconButton(
                   icon: Icon(
@@ -190,9 +199,10 @@ class _EditBusinessDetailsState extends State<EditBusinessDetails> {
                         currentLocation = Future.value(selectedLocation);
                         _locationController.text =
                             "${updatedPlace.street}, ${updatedPlace.subLocality}, ${updatedPlace.locality}, ${updatedPlace.country}";
-                            if(_locationController.text.trim() != _addressDetails) {
-                              isLocationChanged = true;
-                            }
+                        if (_locationController.text.trim() !=
+                            _addressDetails) {
+                          isLocationChanged = true;
+                        }
                       });
                     })
               ]),
