@@ -3,6 +3,8 @@ import 'package:businessclient/services/auth_service.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:businessclient/pages/home.dart';
 
+import '../pages/passwordReset.dart';
+
 class SignIn extends StatefulWidget {
   final Function toggleView;
   const SignIn({super.key, required this.toggleView});
@@ -141,6 +143,25 @@ class _SignInState extends State<SignIn> {
                     ),
                     controller: _passwordController,
                   ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => PasswordReset()),
+                    );
+                  },
+                  child: Text(
+                    'Forgot Password?',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).primaryColor,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
                 ),
                 SizedBox(
                   width: width / 3,
