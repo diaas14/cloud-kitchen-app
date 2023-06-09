@@ -1,6 +1,6 @@
 import 'package:client/firebase_options.dart';
 import 'package:client/pages/auth.dart';
-import 'package:client/pages/home.dart';
+import 'package:client/pages/emailVerification.dart';
 import 'package:client/themes.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -70,11 +70,12 @@ class MyApp extends StatelessWidget {
           }
           if (snapshot.connectionState == ConnectionState.active) {
             if (snapshot.data != null) {
-              return Home();
-            } else {
-              return Auth();
-            }
-          }
+                return EmailVerification();
+              }
+              else {
+                return Auth();
+              }
+            } 
           return CircularProgressIndicator();
         },
       ),

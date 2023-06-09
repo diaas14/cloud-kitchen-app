@@ -19,7 +19,7 @@ class _PasswordResetState extends State<PasswordReset> {
         builder: (BuildContext context) {
           return AlertDialog(
             title: Text('Password Reset'),
-            content: Text('Password reset email has been sent!'),
+            content: Text('Check your inbox. We have sent the password reset email at ${_emailController.text}'),
             actions: <Widget>[
               TextButton(
                 child: Text('OK'),
@@ -56,10 +56,6 @@ class _PasswordResetState extends State<PasswordReset> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Forgot Password'),
-        backgroundColor: Color.fromARGB(255, 21, 120, 131),
-      ),
       body: Container(
         height: double.infinity,
         decoration: BoxDecoration(
