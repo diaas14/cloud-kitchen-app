@@ -1,10 +1,14 @@
 import 'package:client/models/cartModel.dart';
 import 'package:client/pages/cart.dart';
 import 'package:client/widgets/foodProviderProfile.dart';
+import 'package:client/widgets/imageGallery.dart';
 import 'package:client/widgets/menuItemCard.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:client/services/business_service.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import 'menuItemPage.dart';
 
 class FoodProvider extends StatefulWidget {
   final Map<String, dynamic> profile;
@@ -20,12 +24,14 @@ class _FoodProviderState extends State<FoodProvider> {
   @override
   void initState() {
     super.initState();
-    initAsync();
+    _fetchMenu();
   }
 
-  Future<void> initAsync() async {
-    _menu = await fetchMenu(widget.profile["userId"]);
-    setState(() {});
+  Future<void> _fetchMenu() async {
+    final result = await fetchMenu(widget.profile["userId"]);
+    setState(() {
+      _menu = result;
+    });
   }
 
   @override
@@ -93,6 +99,36 @@ class _FoodProviderState extends State<FoodProvider> {
             FoodProviderProfile(profile: widget.profile),
             Container(
               decoration: BoxDecoration(
+                color: Color.fromARGB(255, 218, 241, 230),
+                borderRadius: BorderRadius.circular(5),
+              ),
+              padding: EdgeInsets.symmetric(vertical: 18.0),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20.0),
+                      child: Text(
+                        "Photos",
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.grey[600],
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 8,
+                    ),
+                    ImageGallery(
+                        imageUrls:
+                            widget.profile.containsKey("businessPicsUrls")
+                                ? widget.profile["businessPicsUrls"]
+                                : []),
+                  ]),
+            ),
+            Container(
+              decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(5),
               ),
@@ -101,13 +137,14 @@ class _FoodProviderState extends State<FoodProvider> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 20.0),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 20.0, vertical: 10.0),
                       child: Text(
                         "Menu Items",
                         style: TextStyle(
                           fontSize: 20,
                           color: Colors.grey[600],
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w400,
                         ),
                       ),
                     ),
@@ -117,9 +154,25 @@ class _FoodProviderState extends State<FoodProvider> {
                       itemCount: _menu.length,
                       itemBuilder: (context, index) {
                         final menuItem = _menu[index];
-                        return MenuItemCard(
-                          item: menuItem,
-                          providerProfile: widget.profile,
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => MenuItemPage(
+                                  item: menuItem,
+                                  providerProfile: widget.profile,
+                                ),
+                              ),
+                            ).then((value) {
+                              if (value == true) {
+                                _fetchMenu();
+                              }
+                            });
+                          },
+                          child: MenuItemCard(
+                            item: menuItem,
+                          ),
                         );
                       },
                     ),
@@ -174,7 +227,22 @@ class _FoodProviderState extends State<FoodProvider> {
                             children: [
                               Text(widget.profile['name'],
                                   style: TextStyle(fontSize: 24)),
-                              Text(widget.profile['email']),
+                              SizedBox(height: 4),
+                              GestureDetector(
+                                onTap: () {
+                                  final Uri _emailLaunchUri = Uri(
+                                      scheme: 'mailto',
+                                      path: widget.profile[
+                                          'email'], // Replace with the actual email address
+                                      queryParameters: {
+                                        'subject': 'Hello'
+                                      } // Optional subject parameter
+                                      );
+
+                                  launchUrl(_emailLaunchUri);
+                                },
+                                child: Text(widget.profile['email']),
+                              ),
                             ],
                           ),
                         ),

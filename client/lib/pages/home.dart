@@ -1,7 +1,7 @@
 import 'package:client/models/cartModel.dart';
 import 'package:client/widgets/homeScreen.dart';
 import 'package:flutter/material.dart';
-import 'package:client/pages/profile.dart';
+import 'package:client/widgets/profile.dart';
 import 'package:client/widgets/mapInterface.dart';
 import 'package:client/widgets/foodProviders.dart';
 import 'package:google_sign_in/google_sign_in.dart';

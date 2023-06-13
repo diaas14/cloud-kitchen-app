@@ -131,22 +131,6 @@ class _SignInState extends State<SignIn> {
                     controller: _passwordController,
                   ),
                 ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => PasswordReset()),
-                    );
-                  },
-                  child: Text(
-                    'Forgot Password?',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
-                ),
                 SizedBox(
                   height: 10,
                 ),
@@ -160,6 +144,33 @@ class _SignInState extends State<SignIn> {
                       _signIn(userProvider);
                     },
                     child: Text('Sign In'),
+                  ),
+                ),
+                SizedBox(
+                  height: 16,
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => PasswordReset()),
+                    );
+                  },
+                  child: Text(
+                    'Forgot Password?',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).primaryColor,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 12,
+                ),
+                Text(
+                  "OR",
+                  style: TextStyle(
+                    color: Colors.grey[500],
                   ),
                 ),
                 SizedBox(

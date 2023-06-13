@@ -99,7 +99,7 @@ class _EditBusinessDetailsState extends State<EditBusinessDetails> {
       appBar: AppBar(
         title: Text("Edit Profile"),
         centerTitle: true,
-        backgroundColor: Color.fromARGB(255, 21, 120, 131),
+        backgroundColor: Color.fromARGB(190, 61, 135, 118),
         elevation: 0,
       ),
       body: Container(

@@ -1,7 +1,7 @@
 import 'package:businessclient/pages/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:businessclient/pages/profile.dart';
+import 'package:businessclient/widgets/profile.dart';
 import 'package:businessclient/widgets/orders.dart';
 import 'package:businessclient/widgets/manageMenu.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -37,7 +37,7 @@ class _HomeState extends State<Home> {
       appBar: AppBar(
         title: Text("Home"),
         centerTitle: true,
-        backgroundColor: Color.fromARGB(255, 36, 151, 164),
+        backgroundColor: Color.fromARGB(190, 61, 135, 118),
         elevation: 0,
         actions: [
           IconButton(

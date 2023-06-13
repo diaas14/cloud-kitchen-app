@@ -1,42 +1,59 @@
+import 'package:businessclient/services/orders_service.dart';
 import 'package:flutter/material.dart';
-import 'package:client/services/order_service.dart';
 
-class OrderHistory extends StatefulWidget {
-  const OrderHistory({super.key});
+class OrdersList extends StatefulWidget {
+  final String orderStatus;
+  const OrdersList({super.key, required this.orderStatus});
 
   @override
-  State<OrderHistory> createState() => _OrderHistoryState();
+  State<OrdersList> createState() => _OrdersListState();
 }
 
-class _OrderHistoryState extends State<OrderHistory> {
+class _OrdersListState extends State<OrdersList> {
   List<Map<String, dynamic>> _orders = [];
 
   @override
   void initState() {
     super.initState();
-    initAsync();
+    fetchOrders();
   }
 
-  Future<void> initAsync() async {
-    _orders = await fetchOrders();
-    setState(() {});
+  Future<void> fetchOrders() async {
+    List<Map<String, dynamic>> orders;
+
+    switch (widget.orderStatus) {
+      case 'placed':
+        orders = await fetchPlacedOrders();
+        break;
+      case 'prepared':
+        orders = await fetchPreparedOrders();
+        break;
+      case 'resolved':
+        orders = await fetchResolvedOrders();
+        break;
+      default:
+        orders = [];
+    }
+
+    setState(() {
+      _orders = orders;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Order History"),
-        backgroundColor: Color.fromARGB(190, 61, 135, 118),
-      ),
-      body: ListView.builder(
-        itemCount: _orders.length,
-        itemBuilder: (context, index) {
-          final order = _orders[index];
-          final orderDateTime = DateTime.fromMillisecondsSinceEpoch(
-              order["timestamp"]["_seconds"] * 1000 +
-                  order["timestamp"]["_nanoseconds"] ~/ 1000000);
-          return Card(
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
+    return ListView.builder(
+      itemCount: _orders.length,
+      itemBuilder: (context, index) {
+        final order = _orders[index];
+        final orderDateTime = DateTime.fromMillisecondsSinceEpoch(
+            order["timestamp"]["_seconds"] * 1000 +
+                order["timestamp"]["_nanoseconds"] ~/ 1000000);
+        return GestureDetector(
+          onTap: () {},
+          child: Card(
             elevation: 3,
             margin: EdgeInsets.all(10),
             child: Padding(
@@ -62,16 +79,16 @@ class _OrderHistoryState extends State<OrderHistory> {
                     ),
                     child: ListTile(
                       leading: CircleAvatar(
-                        backgroundImage: order['providerDetails']['imageUrl'] !=
+                        backgroundImage: order['customerDetails']['photoUrl'] !=
                                 null
-                            ? NetworkImage(order['providerDetails']['imageUrl'])
+                            ? NetworkImage(order['customerDetails']['photoUrl'])
                             : AssetImage('assets/icons/kairuchi_icon.png')
                                 as ImageProvider<Object>,
                       ),
                       title: Text(
-                        order['providerDetails']['businessName'],
+                        order['customerDetails']['name'],
                       ),
-                      subtitle: Text(order['providerDetails']['email']),
+                      subtitle: Text(order['customerDetails']['email']),
                     ),
                   ),
                   SizedBox(height: 8.0),
@@ -120,33 +137,13 @@ class _OrderHistoryState extends State<OrderHistory> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 16.0),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Order Status',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                      Text(
-                        order["orderStatus"].toUpperCase(),
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ],
-                  ),
+                  Text(order["orderStatus"]),
                 ],
               ),
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }

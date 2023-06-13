@@ -1,3 +1,4 @@
+import 'package:client/pages/foodProvider.dart';
 import 'package:client/widgets/foodProviderCard.dart';
 import 'package:client/widgets/menuItemCard.dart';
 import 'package:flutter/material.dart';
@@ -147,31 +148,46 @@ class _SearchPageState extends State<SearchPage> {
           ),
           Expanded(
             child: Container(
-              color: Colors.white,
-              child: _isLoading
-                  ? Center(
-                      child: CircularProgressIndicator(),
-                    )
-                  : _searchResults.isEmpty
-                      ? Center(
-                          child: Text('No search results'),
-                        )
-                      : isFoodProvidersSelected
-                          ? ListView.builder(
-                              itemCount: _searchResults.length,
-                              itemBuilder: (context, index) {
-                                final provider = _searchResults[index];
-                                return FoodProviderCard(profile: provider);
-                              },
-                            )
-                          : ListView.builder(
-                              itemCount: _searchResults.length,
-                              itemBuilder: (context, index) {
-                                final item = _searchResults[index];
-                                return Text("MenuItem");
-                              },
-                            ),
-            ),
+                color: Colors.white,
+                child: _isLoading
+                    ? Center(
+                        child: CircularProgressIndicator(),
+                      )
+                    : _searchResults.isEmpty
+                        ? Center(
+                            child: Text('No search results'),
+                          )
+                        : isFoodProvidersSelected
+                            ? ListView.builder(
+                                itemCount: _searchResults.length,
+                                itemBuilder: (context, index) {
+                                  final provider = _searchResults[index];
+                                  return FoodProviderCard(profile: provider);
+                                },
+                              )
+                            : ListView.builder(
+                                itemCount: _searchResults.length,
+                                itemBuilder: (context, index) {
+                                  final item = _searchResults[index];
+                                  return GestureDetector(
+                                    onTap: () async {
+                                      final profile = await fetchServiceDetails(
+                                          item["providerId"]);
+                                      if (mounted) {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => FoodProvider(
+                                              profile: profile,
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                    },
+                                    child: MenuItemCard(item: item),
+                                  );
+                                },
+                              )),
           ),
         ],
       ),

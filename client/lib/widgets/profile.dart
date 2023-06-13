@@ -23,6 +23,12 @@ class _ProfileState extends State<Profile> {
     });
   }
 
+  void updateProfileData() {
+    setState(() {
+      _profileData = fetchProfileData();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
@@ -89,7 +95,10 @@ class _ProfileState extends State<Profile> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => EditProfile(profile: profile)),
+                          builder: (context) => EditProfile(
+                                profile: profile,
+                                onUpdateProfileData: updateProfileData,
+                              )),
                     );
                   },
                 ),

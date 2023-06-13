@@ -5,19 +5,28 @@ import 'package:businessclient/services/profile_service.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 
-class AddMenuItem extends StatefulWidget {
+class EditMenuItem extends StatefulWidget {
+  final Map<String, dynamic> item;
+  const EditMenuItem({super.key, required this.item});
+
   @override
-  _AddMenuItemState createState() => _AddMenuItemState();
+  _EditMenuItemState createState() => _EditMenuItemState();
 }
 
-class _AddMenuItemState extends State<AddMenuItem> {
+class _EditMenuItemState extends State<EditMenuItem> {
   final TextEditingController _itemNameController = TextEditingController();
-  final TextEditingController _itemPriceController = TextEditingController();
   final TextEditingController _itemDescriptionController =
       TextEditingController();
+  final TextEditingController _itemPriceController = TextEditingController();
+  late int _quantity;
+  bool _isitemNameChanged = false;
+  bool _isitemDescriptionChanged = false;
+  bool _isitemPriceChanged = false;
+  bool _isitemQuantityChanged = false;
+
   final _formKey = GlobalKey<FormState>();
-  XFile? _imageFile = null;
-  int _quantity = 1;
+  XFile? _imageFile;
+
   List<String> tags = [];
   bool _showAllTags = false;
   final List<String> _suggestedTags = [
@@ -61,6 +70,19 @@ class _AddMenuItemState extends State<AddMenuItem> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _itemNameController.text = widget.item["itemName"] ?? '';
+    _itemDescriptionController.text = widget.item["itemDescription"] ?? '';
+    _itemPriceController.text = widget.item.containsKey("itemPrice")
+        ? widget.item["itemPrice"].toString()
+        : '0';
+    _quantity = widget.item.containsKey("itemQuantity")
+        ? widget.item["itemQuantity"]
+        : 1;
+  }
+
+  @override
   void dispose() {
     _itemNameController.dispose();
     _itemPriceController.dispose();
@@ -80,54 +102,40 @@ class _AddMenuItemState extends State<AddMenuItem> {
     }
   }
 
-  void _addItem() async {
+  void _editItem() async {
     if (_formKey.currentState!.validate()) {
       final data = <String, dynamic>{};
-      data["itemName"] = _itemNameController.text;
-      data["itemPrice"] = _itemPriceController.text;
-      if (_itemDescriptionController.text.isNotEmpty) {
+
+      if (_isitemNameChanged) {
+        data["itemName"] = _itemNameController.text;
+      }
+      if (_isitemDescriptionChanged) {
         data["itemDescription"] = _itemDescriptionController.text;
       }
-      if (tags.isNotEmpty) {
-        data["itemTags"] = tags;
+      if (_isitemPriceChanged) {
+        data["itemPrice"] = _itemPriceController.text;
       }
-      data["itemQuantity"] = _quantity;
-      final result = await addItemToMenu(data, _imageFile);
-      Fluttertoast.showToast(
-        msg: result,
-      );
-      if (result == 'success' && mounted) {
-        Navigator.pop(context, true);
+      if (_isitemQuantityChanged) {
+        data["itemQuantity"] = _quantity;
+      }
+
+      if (data.isNotEmpty || _imageFile != null) {
+        final res =
+            await updateMenuItem(data, _imageFile, widget.item["itemId"]);
+        Fluttertoast.showToast(msg: res);
+        if (res == 'success' && mounted) {
+          Navigator.pop(context, true);
+        }
       }
     }
   }
 
-  void _toggleTag(String tag) {
-    if (tags.contains(tag)) {
-      setState(() {
-        tags.remove(tag);
-      });
-    } else if (tags.length < 5) {
-      setState(() {
-        tags.add(tag);
-      });
-    } else {
-      Fluttertoast.showToast(
-        msg: 'Maximum number of tags reached',
-        gravity: ToastGravity.BOTTOM,
-        toastLength: Toast.LENGTH_SHORT,
-      );
+  void _deleteItem() async {
+    final res = await deleteMenuItem(widget.item["itemId"]);
+    Fluttertoast.showToast(msg: res);
+    if (res == 'success' && mounted) {
+      Navigator.pop(context, true);
     }
-  }
-
-  List<String> get _displayedTags =>
-      _showAllTags ? _suggestedTags : _suggestedTags.take(8).toList();
-
-// Toggle the _showAllTags value to show/hide all tags
-  void _toggleShowAllTags() {
-    setState(() {
-      _showAllTags = !_showAllTags;
-    });
   }
 
   @override
@@ -136,7 +144,7 @@ class _AddMenuItemState extends State<AddMenuItem> {
     final width = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
-        title: Text("Add Menu Item"),
+        title: Text("Edit Menu Item"),
         centerTitle: true,
         backgroundColor: Color.fromARGB(190, 61, 135, 118),
         elevation: 0,
@@ -164,12 +172,19 @@ class _AddMenuItemState extends State<AddMenuItem> {
                                     width: width,
                                     fit: BoxFit.cover,
                                   )
-                                : Image.asset(
-                                    'assets/icons/kairuchi_icon.png',
-                                    height: height / 3,
-                                    width: width,
-                                    fit: BoxFit.cover,
-                                  ),
+                                : widget.item.containsKey("itemImgUrl")
+                                    ? Image.network(
+                                        widget.item["itemImgUrl"],
+                                        height: height / 3,
+                                        width: width,
+                                        fit: BoxFit.cover,
+                                      )
+                                    : Image.asset(
+                                        'assets/icons/kairuchi_icon.png',
+                                        height: height / 3,
+                                        width: width,
+                                        fit: BoxFit.cover,
+                                      ),
                           ),
                           IconButton(
                             icon: Icon(
@@ -218,6 +233,12 @@ class _AddMenuItemState extends State<AddMenuItem> {
                         }
                         return null;
                       },
+                      onChanged: (value) {
+                        setState(() {
+                          _isitemNameChanged =
+                              value.trim() != widget.item["itemName"];
+                        });
+                      },
                     ),
                     SizedBox(
                       height: 16.0,
@@ -242,6 +263,16 @@ class _AddMenuItemState extends State<AddMenuItem> {
                           ),
                         ),
                       ),
+                      onChanged: (value) {
+                        setState(() {
+                          _isitemDescriptionChanged = value.trim() != ''
+                              ? (widget.item.containsKey("itemDescription")
+                                  ? value.trim() !=
+                                      widget.item["itemDescription"]
+                                  : true)
+                              : false;
+                        });
+                      },
                       maxLength: 100,
                     ),
                     TextFormField(
@@ -283,6 +314,12 @@ class _AddMenuItemState extends State<AddMenuItem> {
                         }
                         return null;
                       },
+                      onChanged: (value) {
+                        setState(() {
+                          _isitemPriceChanged = value.trim() !=
+                              widget.item["itemPrice"].toString();
+                        });
+                      },
                     ),
                     SizedBox(
                       height: 16.0,
@@ -303,6 +340,8 @@ class _AddMenuItemState extends State<AddMenuItem> {
                           onChanged: (int newQuantity) {
                             setState(() {
                               _quantity = newQuantity;
+                              _isitemQuantityChanged =
+                                  _quantity != widget.item["itemQuantity"];
                             });
                           },
                         ),
@@ -311,124 +350,34 @@ class _AddMenuItemState extends State<AddMenuItem> {
                     SizedBox(
                       height: 16.0,
                     ),
-                    SizedBox(
-                      height: 16.0,
-                    ),
-                    Text(
-                      'Select Tags',
-                      style: TextStyle(
-                        fontSize: 16.0,
-                        color: Color.fromARGB(190, 61, 135, 118),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 8.0,
-                    ),
-                    Wrap(
-                      children: tags.map((tag) {
-                        return Container(
-                          margin: EdgeInsets.all(4),
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: Color.fromARGB(255, 167, 210, 197),
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: Text(
-                            tag,
-                            style: TextStyle(
-                              color: Colors.white,
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                    SizedBox(
-                      height: 16.0,
-                    ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          'Suggested Tags',
-                          style: TextStyle(
-                            fontSize: 16.0,
-                            color: Color.fromARGB(190, 61, 135, 118),
+                        ElevatedButton(
+                          onPressed: _imageFile != null ||
+                                  _isitemNameChanged ||
+                                  _isitemDescriptionChanged ||
+                                  _isitemPriceChanged ||
+                                  _isitemQuantityChanged
+                              ? _editItem
+                              : null,
+                          child: Text('Edit Item'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Theme.of(context).primaryColor,
                           ),
                         ),
-                        TextButton(
-                          onPressed: _toggleShowAllTags,
-                          child: Text(
-                            _showAllTags ? 'Hide' : 'Show More',
-                            style: TextStyle(
-                              color: Color.fromARGB(190, 61, 135, 118),
-                              fontSize: 14,
-                              fontWeight: FontWeight.normal,
-                            ),
+                        ElevatedButton.icon(
+                          label: Text("Delete Item"),
+                          onPressed: _deleteItem,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Theme.of(context).primaryColor,
+                          ),
+                          icon: Icon(
+                            Icons.delete_outline,
                           ),
                         ),
                       ],
-                    ),
-                    SizedBox(
-                      height: 8.0,
-                    ),
-                    Wrap(
-                      children: _displayedTags.map((tag) {
-                        bool isSelected = tags.contains(tag);
-
-                        return GestureDetector(
-                          onTap: () {
-                            _toggleTag(tag);
-                          },
-                          child: Container(
-                            margin: EdgeInsets.all(4),
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: isSelected
-                                  ? Color.fromARGB(255, 167, 210, 197)
-                                  : Colors.white,
-                              borderRadius: BorderRadius.circular(16),
-                              border: Border.all(
-                                color: isSelected
-                                    ? Color.fromARGB(255, 167, 210, 197)
-                                    : Color.fromARGB(190, 61, 135, 118),
-                                width: 1.5,
-                              ),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  tag,
-                                  style: TextStyle(
-                                    color: isSelected
-                                        ? Colors.white
-                                        : Color.fromARGB(190, 61, 135, 118),
-                                    fontWeight: isSelected
-                                        ? FontWeight.bold
-                                        : FontWeight.normal,
-                                  ),
-                                ),
-                                Icon(isSelected ? Icons.close : Icons.add,
-                                    color: isSelected
-                                        ? Colors.white
-                                        : Color.fromARGB(190, 61, 135, 118),
-                                    size: 16),
-                              ],
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                    SizedBox(height: 8.0),
-                    ElevatedButton(
-                      onPressed: _addItem,
-                      child: Text('Add Item'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).primaryColor,
-                      ),
-                    ),
+                    )
                   ],
                 ),
               ),

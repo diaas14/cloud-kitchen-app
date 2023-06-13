@@ -23,11 +23,13 @@ class _CartState extends State<Cart> {
           Map<String, CartItem> cartItems = cartModel.items;
           final userProvider =
               Provider.of<UserProvider>(context, listen: false);
+
           if (cartItems.isEmpty) {
             return Center(
               child: Text('No items in the cart'),
             );
           }
+
           return Container(
             padding: EdgeInsets.all(16.0),
             decoration: BoxDecoration(
@@ -40,41 +42,44 @@ class _CartState extends State<Cart> {
                 Padding(
                   padding: EdgeInsets.all(10.0),
                   child: Text(
-                      'Products Sold By ${cartModel.providerDetails["businessName"]}',
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.grey[600],
-                      )),
+                    'Products Sold By ${cartModel.providerDetails["businessName"]}',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.grey[600],
+                    ),
+                  ),
                 ),
-                ListView.builder(
-                  physics: NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemCount: cartItems.length,
-                  itemBuilder: (context, index) {
-                    CartItem cartItem = cartItems.values.elementAt(index);
-                    return Card(
-                      child: Padding(
-                        padding: EdgeInsets.all(15.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '${cartItem.name} x ${cartItem.units}',
-                              style: TextStyle(fontSize: 20),
-                            ),
-                            SizedBox(height: 8.0),
-                            Text(
-                              '\u20B9${cartItem.price}',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.grey[600],
+                Expanded(
+                  child: ListView.builder(
+                    physics: NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: cartItems.length,
+                    itemBuilder: (context, index) {
+                      CartItem cartItem = cartItems.values.elementAt(index);
+                      return Card(
+                        child: Padding(
+                          padding: EdgeInsets.all(15.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '${cartItem.name} x ${cartItem.units}',
+                                style: TextStyle(fontSize: 20),
                               ),
-                            ),
-                          ],
+                              SizedBox(height: 8.0),
+                              Text(
+                                '\u20B9${cartItem.price}',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
                 SizedBox(height: 16),
                 Row(
@@ -96,14 +101,16 @@ class _CartState extends State<Cart> {
                     ),
                   ],
                 ),
-                Row(
-                  children: [
-                    Expanded(
-                      flex: 1,
-                      child: Container(
+                SizedBox(height: 16),
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Column(
+                    children: [
+                      Container(
+                        width: double.infinity,
+                        margin: EdgeInsets.only(bottom: 8.0),
                         decoration: BoxDecoration(
-                          color: Color.fromARGB(
-                              190, 61, 135, 118), // Background color
+                          color: Color.fromARGB(190, 61, 135, 118),
                         ),
                         child: TextButton(
                           onPressed: () {
@@ -117,20 +124,19 @@ class _CartState extends State<Cart> {
                           ),
                         ),
                       ),
-                    ),
-                    Expanded(
-                      flex: 1,
-                      child: Container(
+                      Container(
+                        width: double.infinity,
                         decoration: BoxDecoration(
-                          color: Color.fromARGB(
-                              190, 61, 135, 118), // Background color
+                          color: Color.fromARGB(190, 61, 135, 118),
                         ),
                         child: TextButton(
                           onPressed: () async {
                             print(cartModel);
                             print(userProvider.userData);
                             String res = await placeOrder(
-                                cartModel, userProvider.userData);
+                              cartModel,
+                              userProvider.userData,
+                            );
                             Fluttertoast.showToast(msg: res);
                             cartModel.clearCart();
                           },
@@ -142,8 +148,8 @@ class _CartState extends State<Cart> {
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),

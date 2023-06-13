@@ -37,7 +37,7 @@ Future<String> updateBusinessData(
   final token = await _auth.currentUser?.getIdToken();
 
   var request = http.MultipartRequest(
-    'POST',
+    'PUT',
     Uri.parse(
       '${apiUrl}api/business-profile/$uid',
     ),
@@ -146,7 +146,7 @@ Future<String> addItemToMenu(
   var request = http.MultipartRequest(
     'POST',
     Uri.parse(
-      '${apiUrl}api/business-profile/menu/$uid',
+      '${apiUrl}api/business-profile/menu/',
     ),
   );
 
@@ -163,7 +163,7 @@ Future<String> addItemToMenu(
     }
   });
 
-  print(request.fields);
+  request.fields["userId"] = uid!;
 
   try {
     if (imageFile != null) {
@@ -188,7 +188,64 @@ Future<String> addItemToMenu(
   }
 }
 
-// will work ?
+Future<String> updateMenuItem(
+    Map<String, dynamic> data, XFile? imageFile, String itemId) async {
+  final token = await _auth.currentUser?.getIdToken();
+  print(data);
+  var request = http.MultipartRequest(
+    'PUT',
+    Uri.parse(
+      '${apiUrl}api/business-profile/menu/$itemId',
+    ),
+  );
+
+  request.headers.addAll({
+    'Authorization': 'Bearer $token',
+  });
+
+  data.forEach((key, value) {
+    request.fields[key] = value.toString();
+  });
+  try {
+    if (imageFile != null) {
+      var imageStream = http.ByteStream(imageFile.openRead());
+      var imageLength = await imageFile.length();
+      var multipartFile = http.MultipartFile('image', imageStream, imageLength,
+          filename: path.basename(imageFile.path));
+      request.files.add(multipartFile);
+    }
+  } catch (e) {
+    return e.toString();
+  }
+  print(request.fields);
+  final response = await request.send();
+  if (response.statusCode == 200) {
+    print('success');
+    return 'success';
+  } else {
+    print('Failed to upload data and image. Error: ${response.toString()}');
+    return 'Failed to upload data and image. Error: ${response.statusCode}';
+  }
+}
+
+Future<String> deleteMenuItem(String itemId) async {
+  if (_auth.currentUser != null) {
+    final token = await _auth.currentUser?.getIdToken();
+    final res = await http.delete(
+      Uri.parse('${apiUrl}api/business-profile/menu/$itemId'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+    if (res.statusCode == 200) {
+      return 'success';
+    } else {
+      return 'Failed to delete Menu Item';
+    }
+  }
+  throw Exception('No user found.');
+}
+
 Future<List<Map<String, dynamic>>> fetchMenuItems() async {
   if (_auth.currentUser != null) {
     final uid = _auth.currentUser?.uid;

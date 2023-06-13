@@ -5,7 +5,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:businessclient/services/profile_service.dart';
 
 class PhotosPicker extends StatefulWidget {
-  const PhotosPicker({super.key});
+  final VoidCallback onPostClicked;
+  const PhotosPicker({super.key, required this.onPostClicked});
 
   @override
   State<PhotosPicker> createState() => _PhotosPickerState();
@@ -71,17 +72,20 @@ class _PhotosPickerState extends State<PhotosPicker> {
       return Container();
     }
 
-    return GridView.builder(
-      shrinkWrap: true,
-      itemCount: _imageFiles.length,
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-        mainAxisSpacing: 8,
-        crossAxisSpacing: 8,
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 10),
+      child: GridView.builder(
+        shrinkWrap: true,
+        itemCount: _imageFiles.length,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+          mainAxisSpacing: 8,
+          crossAxisSpacing: 8,
+        ),
+        itemBuilder: (BuildContext context, int index) {
+          return _buildImagePreview(_imageFiles[index], index);
+        },
       ),
-      itemBuilder: (BuildContext context, int index) {
-        return _buildImagePreview(_imageFiles[index], index);
-      },
     );
   }
 
@@ -95,8 +99,14 @@ class _PhotosPickerState extends State<PhotosPicker> {
           icon: Icon(
             Icons.add,
             size: 24.0,
+            color: Color.fromARGB(190, 61, 135, 118),
           ),
-          label: Text('Add photos'),
+          label: Text(
+            'Add photos',
+            style: TextStyle(
+              color: Color.fromARGB(190, 61, 135, 118),
+            ),
+          ),
         ),
         if (_imageFiles.isNotEmpty)
           Column(
@@ -104,11 +114,18 @@ class _PhotosPickerState extends State<PhotosPicker> {
             children: [
               _buildImageGrid(),
               TextButton(
-                  onPressed: () async {
-                    final res = await postImages(_imageFiles);
-                    print(res);
-                  },
-                  child: Text("Post"))
+                onPressed: () async {
+                  final res = await postImages(_imageFiles);
+                  _imageFiles.clear();
+                  widget.onPostClicked.call();
+                },
+                child: Text(
+                  "Post",
+                  style: TextStyle(
+                    color: Color.fromARGB(190, 61, 135, 118),
+                  ),
+                ),
+              )
             ],
           ),
       ],

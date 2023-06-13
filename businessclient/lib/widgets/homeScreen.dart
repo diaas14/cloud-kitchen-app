@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -20,7 +21,17 @@ class _HomeScreenState extends State<HomeScreen> {
               clipper: BottomSkewClipper(),
               child: Container(
                 height: height / 2,
-                color: Color.fromARGB(190, 122, 209, 188),
+                // color: Color.fromARGB(188, 50, 147, 124),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment(-1, -1),
+                    end: Alignment(1, 0.75),
+                    colors: <Color>[
+                      Color.fromARGB(187, 38, 117, 99),
+                      Color.fromARGB(255, 224, 254, 245),
+                    ],
+                  ),
+                ),
               ),
             ),
             Positioned(
@@ -31,29 +42,48 @@ class _HomeScreenState extends State<HomeScreen> {
                 width: width / 1.5,
               ),
             ),
-            Align(
-              alignment: Alignment.bottomCenter,
+            Padding(
+              padding: EdgeInsets.only(top: 35, left: 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(20, 40, 20, 10),
-                    child: Text(
-                      'Welcome to Kairuchi Business',
-                      style: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
+                children: [
+                  Text(
+                    'Indulge in Culinary Delights with',
+                    style: GoogleFonts.oxygen(
+                      fontSize: 17,
+                      fontWeight: FontWeight.normal,
+                      color: Colors.white,
                     ),
                   ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                  Text(
+                    'Kairuchi',
+                    style: GoogleFonts.juliusSansOne(
+                      fontSize: 70,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.white,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 8,
+                  ),
+                  Text(
+                    'Locate and purchase home-cooked healthy meals from small-scale, regional food providers in your neighborhood!',
+                    style: GoogleFonts.oxygen(
+                      fontSize: 17,
+                      fontWeight: FontWeight.normal,
+                      color: Colors.white,
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {},
+                    style: TextButton.styleFrom(
+                      backgroundColor: Color.fromARGB(47, 255, 255, 255),
+                    ),
                     child: Text(
-                      'Locate and purchase home-cooked healthy meals from small-scale, regional food providers in your neighborhood!',
+                      "Explore",
                       style: TextStyle(
                         fontSize: 18,
-                        color: Colors.white,
+                        color: Theme.of(context).primaryColor,
                       ),
                     ),
                   ),

@@ -28,8 +28,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     begin: Alignment(-1, -1),
                     end: Alignment(1, 0.75),
                     colors: <Color>[
-                      Color.fromARGB(188, 50, 147, 124),
-                      Color.fromARGB(255, 193, 255, 236),
+                      Color.fromARGB(187, 38, 117, 99),
+                      Color.fromARGB(255, 224, 254, 245),
                     ],
                   ),
                 ),
@@ -50,32 +50,36 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   Text(
                     'Indulge in Culinary Delights with',
-                    style: GoogleFonts.bebasNeue(
-                      fontSize: 34,
+                    style: GoogleFonts.oxygen(
+                      fontSize: 17,
+                      fontWeight: FontWeight.normal,
+                      color: Colors.white,
                     ),
                   ),
                   Text(
                     'Kairuchi',
-                    style: TextStyle(
-                      fontSize: 78,
-                      fontFamily: 'Cabin',
-                      fontWeight: FontWeight.bold,
+                    style: GoogleFonts.juliusSansOne(
+                      fontSize: 70,
+                      fontWeight: FontWeight.w500,
                       color: Colors.white,
                     ),
                   ),
                   SizedBox(
-                    height: 5,
+                    height: 8,
                   ),
                   Text(
                     'Locate and purchase home-cooked healthy meals from small-scale, regional food providers in your neighborhood!',
-                    style: TextStyle(
-                        fontSize: 17,
-                        fontFamily: 'Roboto',
-                        color: Colors.white,
-                        fontWeight: FontWeight.w400),
+                    style: GoogleFonts.oxygen(
+                      fontSize: 17,
+                      fontWeight: FontWeight.normal,
+                      color: Colors.white,
+                    ),
                   ),
                   TextButton(
                     onPressed: () {},
+                    style: TextButton.styleFrom(
+                      backgroundColor: Color.fromARGB(47, 255, 255, 255),
+                    ),
                     child: Text(
                       "Explore",
                       style: TextStyle(

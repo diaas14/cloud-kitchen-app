@@ -24,6 +24,24 @@ Future<List<Map<String, dynamic>>> fetchBusinessProfiles() async {
   }
 }
 
+Future<Map<String, dynamic>> fetchServiceDetails(String providerId) async {
+  if (_auth.currentUser != null) {
+    final token = await _auth.currentUser?.getIdToken();
+    final res = await http.get(
+      Uri.parse('${apiUrl}api/business-profile/$providerId'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+    if (res.statusCode == 200) {
+      return json.decode(res.body) as Map<String, dynamic>;
+    } else {
+      throw Exception('Failed to load profile data.');
+    }
+  }
+  throw Exception('No user found.');
+}
+
 Future<List<Map<String, dynamic>>> fetchMenu(String providerId) async {
   final token = await _auth.currentUser?.getIdToken();
   final response = await http.get(

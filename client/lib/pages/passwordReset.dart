@@ -19,7 +19,8 @@ class _PasswordResetState extends State<PasswordReset> {
         builder: (BuildContext context) {
           return AlertDialog(
             title: Text('Password Reset'),
-            content: Text('Check your inbox. We have sent the password reset email at ${_emailController.text}'),
+            content: Text(
+                'Check your inbox. We have sent the password reset email at ${_emailController.text}'),
             actions: <Widget>[
               TextButton(
                 child: Text('OK'),
@@ -56,66 +57,69 @@ class _PasswordResetState extends State<PasswordReset> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        height: double.infinity,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment(-1, -1),
-            end: Alignment(1, 1),
-            colors: <Color>[
-              Theme.of(context).backgroundColor,
-              Color.fromARGB(190, 255, 255, 255)
-            ],
-          ),
+        body: Container(
+      height: double.infinity,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment(-1, -1),
+          end: Alignment(1, 1),
+          colors: <Color>[
+            Theme.of(context).backgroundColor,
+            Color.fromARGB(190, 255, 255, 255)
+          ],
         ),
+      ),
       child: SingleChildScrollView(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Image.asset(
-                  'assets/images/idli_illustration.png',
-                  width: MediaQuery.of(context).size.width / (1.3),
-                ),
-              ),
-              Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            SizedBox(
-                      height: 10,
-                    ),
-            Text("Please enter your email address. We will send a mail with the password reset link.",
-            style: TextStyle(fontSize: 16),),
-              SizedBox(
-                height: 20,
-              ),
-              TextField(
-                controller: _emailController,
-                cursorColor: Color.fromARGB(255, 21, 120, 131),
-                decoration: InputDecoration(
-                        contentPadding: EdgeInsets.symmetric(vertical: 10.0),
-                        hintText: 'Email',
-                      ),
-              ),
-              SizedBox(
-                      height: 16,
-                    ),
-              ElevatedButton(
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.resolveWith((states) => Theme.of(context).primaryColor),
-                ),
-                child: Text(
-                  'Reset Password',
-                ),
-                onPressed: _resetPassword,
-              ),
-            ],
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Image.asset(
+              'assets/images/idli_illustration.png',
+              width: MediaQuery.of(context).size.width / (1.3),
+            ),
           ),
-        ),
-            ],)
-      ),
+          Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                SizedBox(
+                  height: 10,
+                ),
+                Text(
+                  "Please enter your email address. We will send a mail with the password reset link.",
+                  style: TextStyle(fontSize: 16),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                TextField(
+                  controller: _emailController,
+                  cursorColor: Color.fromARGB(255, 21, 120, 131),
+                  decoration: InputDecoration(
+                    contentPadding: EdgeInsets.symmetric(vertical: 10.0),
+                    hintText: 'Email',
+                  ),
+                ),
+                SizedBox(
+                  height: 16,
+                ),
+                ElevatedButton(
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.resolveWith(
+                        (states) => Theme.of(context).primaryColor),
+                  ),
+                  child: Text(
+                    'Reset Password',
+                  ),
+                  onPressed: _resetPassword,
+                ),
+              ],
+            ),
+          ),
+        ],
+      )),
     ));
   }
 }

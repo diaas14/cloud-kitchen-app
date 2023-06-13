@@ -1,6 +1,8 @@
+import 'package:businessclient/pages/editMenuItem.dart';
+import 'package:businessclient/widgets/menuItemCard.dart';
 import 'package:flutter/material.dart';
-import 'package:businessclient/widgets/menuList.dart';
 import 'package:businessclient/pages/addMenuItem.dart';
+import 'package:businessclient/services/profile_service.dart';
 
 class ManageMenu extends StatefulWidget {
   const ManageMenu({super.key});
@@ -10,9 +12,24 @@ class ManageMenu extends StatefulWidget {
 }
 
 class _ManageMenuState extends State<ManageMenu> {
+  List<Map<String, dynamic>> _menu = [];
+
+  Future<void> _getItems() async {
+    final result = await fetchMenuItems();
+    setState(() {
+      _menu = result;
+    });
+  }
+
+  @override
+  void didPopNext() {
+    _getItems(); // Call _getItems when returning to this page
+  }
+
   @override
   void initState() {
     super.initState();
+    _getItems();
   }
 
   @override
@@ -26,12 +43,39 @@ class _ManageMenuState extends State<ManageMenu> {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => AddMenuItem()),
-              );
+              ).then((value) {
+                if (value == true) {
+                  _getItems(); // Refresh menu items when returning from EditMenuItem
+                }
+              });
             },
             icon: Icon(Icons.add),
           ),
         ),
-        Expanded(child: MenuList()),
+        ListView.builder(
+          physics: NeverScrollableScrollPhysics(),
+          shrinkWrap: true,
+          itemCount: _menu.length,
+          itemBuilder: (context, index) {
+            final menuItem = _menu[index];
+            return GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => EditMenuItem(item: menuItem)),
+                ).then((value) {
+                  if (value == true) {
+                    _getItems(); // Refresh menu items when returning from EditMenuItem
+                  }
+                });
+              },
+              child: MenuItemCard(
+                item: menuItem,
+              ),
+            );
+          },
+        ),
       ],
     );
   }

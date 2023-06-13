@@ -3,9 +3,7 @@ import 'package:client/pages/menuItemPage.dart';
 
 class MenuItemCard extends StatefulWidget {
   final Map<String, dynamic> item;
-  final Map<String, dynamic> providerProfile;
-  const MenuItemCard(
-      {super.key, required this.item, required this.providerProfile});
+  const MenuItemCard({super.key, required this.item});
 
   @override
   State<MenuItemCard> createState() => _MenuItemCardState();
@@ -14,26 +12,31 @@ class MenuItemCard extends StatefulWidget {
 class _MenuItemCardState extends State<MenuItemCard> {
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => MenuItemPage(
-              item: widget.item,
-              providerProfile: widget.providerProfile,
+    return Card(
+      child: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10.0),
+              child: widget.item["itemImgUrl"] != null
+                  ? Image.network(
+                      widget.item["itemImgUrl"],
+                      width: 80.0,
+                      height: 80.0,
+                      fit: BoxFit.cover,
+                    )
+                  : Image.asset(
+                      'assets/icons/kairuchi_icon.png',
+                      width: 80.0,
+                      height: 80.0,
+                      fit: BoxFit.cover,
+                    ),
             ),
-          ),
-        );
-      },
-      child: Card(
-        child: Padding(
-          padding: EdgeInsets.all(16.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                width: 250,
+            Expanded(
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -45,13 +48,14 @@ class _MenuItemCardState extends State<MenuItemCard> {
                       ),
                     ),
                     SizedBox(height: 8.0),
-                    Text(
-                      widget.item["itemDescription"],
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey[600],
+                    if (widget.item.containsKey("itemDescription"))
+                      Text(
+                        widget.item["itemDescription"],
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey[600],
+                        ),
                       ),
-                    ),
                     SizedBox(height: 8.0),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -96,24 +100,8 @@ class _MenuItemCardState extends State<MenuItemCard> {
                   ],
                 ),
               ),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(10.0),
-                child: widget.item["itemImgUrl"] != null
-                    ? Image.network(
-                        widget.item["itemImgUrl"],
-                        width: 80.0,
-                        height: 80.0,
-                        fit: BoxFit.cover,
-                      )
-                    : Image.asset(
-                        'assets/icons/kairuchi_icon.png',
-                        width: 80.0,
-                        height: 80.0,
-                        fit: BoxFit.cover,
-                      ),
-              ),
-            ],
-          ),
+            )
+          ],
         ),
       ),
     );

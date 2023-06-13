@@ -7,8 +7,10 @@ import 'package:image_picker/image_picker.dart';
 
 class EditProfile extends StatefulWidget {
   final Map<String, dynamic> profile;
+  final Function onUpdateProfileData;
 
-  const EditProfile({super.key, required this.profile});
+  const EditProfile(
+      {super.key, required this.profile, required this.onUpdateProfileData});
 
   @override
   State<EditProfile> createState() => _EditProfileState();
@@ -43,6 +45,11 @@ class _EditProfileState extends State<EditProfile> {
       if (data.isNotEmpty || _imageFile != null) {
         final res = await updateProfile(data, _imageFile);
         Fluttertoast.showToast(msg: res);
+
+        if (res == 'success' && mounted) {
+          widget.onUpdateProfileData();
+          Navigator.pop(context);
+        }
       }
     }
   }

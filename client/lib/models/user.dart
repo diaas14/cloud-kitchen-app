@@ -42,28 +42,3 @@ class UserProvider extends ChangeNotifier {
     notifyListeners();
   }
 }
-// import 'package:flutter/foundation.dart';
-// import 'package:client/services/profile_service.dart';
-
-// class UserProvider extends ChangeNotifier {
-//   Map<String, dynamic>? _userData;
-//   bool _isLoading = false;
-
-//   Map<String, dynamic>? get userData => _userData;
-//   bool get isLoading => _isLoading;
-
-//   Future<void> fetchUserProfileData() async {
-//     _isLoading = true;
-//     notifyListeners();
-
-//     try {
-//       _userData = await fetchProfileData();
-//       _isLoading = false;
-//       notifyListeners();
-//     } catch (e) {
-//       _isLoading = false;
-//       notifyListeners();
-//       // rethrow;
-//     }
-//   }
-// }
