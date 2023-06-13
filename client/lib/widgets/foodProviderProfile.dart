@@ -11,6 +11,7 @@ class FoodProviderProfile extends StatefulWidget {
 class _FoodProviderProfileState extends State<FoodProviderProfile> {
   @override
   Widget build(BuildContext context) {
+    print(widget.profile);
     return Container(
       padding: const EdgeInsets.all(15.0),
       decoration: BoxDecoration(

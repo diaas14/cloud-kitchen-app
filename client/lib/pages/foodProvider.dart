@@ -1,5 +1,6 @@
 import 'package:client/models/cartModel.dart';
 import 'package:client/pages/cart.dart';
+import 'package:client/pages/filterByTags.dart';
 import 'package:client/widgets/foodProviderProfile.dart';
 import 'package:client/widgets/imageGallery.dart';
 import 'package:client/widgets/menuItemCard.dart';
@@ -20,6 +21,7 @@ class FoodProvider extends StatefulWidget {
 
 class _FoodProviderState extends State<FoodProvider> {
   List<Map<String, dynamic>> _menu = [];
+  List<String> _selectedTags = [];
 
   @override
   void initState() {
@@ -134,49 +136,92 @@ class _FoodProviderState extends State<FoodProvider> {
               ),
               padding: EdgeInsets.symmetric(vertical: 10.0),
               child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 20.0, vertical: 10.0),
-                      child: Text(
-                        "Menu Items",
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: Colors.grey[600],
-                          fontWeight: FontWeight.w400,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "Menu Items",
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: Colors.grey[600],
+                            fontWeight: FontWeight.w400,
+                          ),
                         ),
-                      ),
+                        TextButton.icon(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    FilterByTags(checkedTags: _selectedTags),
+                              ),
+                            ).then(
+                              (selectedTags) {
+                                setState(
+                                  () {
+                                    _selectedTags = selectedTags;
+                                  },
+                                );
+                              },
+                            );
+                          },
+                          label: Text(
+                            "Filter",
+                            style: TextStyle(
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                          icon: Icon(
+                            Icons.filter_list,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ],
                     ),
-                    ListView.builder(
+                  ),
+                  ListView.builder(
                       physics: NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
                       itemCount: _menu.length,
                       itemBuilder: (context, index) {
                         final menuItem = _menu[index];
-                        return GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => MenuItemPage(
-                                  item: menuItem,
-                                  providerProfile: widget.profile,
+                        bool showItem = _selectedTags.isEmpty ||
+                            _selectedTags.any(
+                                (tag) => menuItem["itemTags"].contains(tag));
+                        if (showItem) {
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => MenuItemPage(
+                                    item: menuItem,
+                                    providerProfile: widget.profile,
+                                  ),
                                 ),
-                              ),
-                            ).then((value) {
-                              if (value == true) {
-                                _fetchMenu();
-                              }
-                            });
-                          },
-                          child: MenuItemCard(
-                            item: menuItem,
-                          ),
-                        );
-                      },
-                    ),
-                  ]),
+                              ).then(
+                                (value) {
+                                  if (value == true) {
+                                    _fetchMenu();
+                                  }
+                                },
+                              );
+                            },
+                            child: MenuItemCard(
+                              item: menuItem,
+                            ),
+                          );
+                        } else {
+                          return SizedBox();
+                        }
+                      }),
+                ],
+              ),
             ),
             Card(
               child: Padding(
