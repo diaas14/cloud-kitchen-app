@@ -14,11 +14,12 @@ router.post(
 );
 
 router.get("/:userId", businessProfileController.fetchProfile);
-router.post(
+
+router.put("/transactions", businessProfileController.processTransaction);
+
+router.put(
   "/:userId",
   businessProfileController.updateProfile.bind(businessProfileController)
 );
-
-router.put("/transactions", businessProfileController.processTransaction);
 
 module.exports = router;

@@ -44,6 +44,7 @@ class OrderController {
         customerDetails: parsedCustomerData,
         providerDetails: parsedProviderDetails,
         timestamp: admin.firestore.FieldValue.serverTimestamp(),
+        orderStatus: "placed",
       };
 
       await newOrderRef.set(newOrder);
@@ -51,6 +52,24 @@ class OrderController {
       return res.status(201).json({ message: "Order created successfully." });
     } catch (error) {
       console.error("Error creating order:", error);
+      return res.status(500).json({ message: "Internal server error." });
+    }
+  }
+
+  async changeOrderStatus(req, res) {
+    const { orderId } = req.params;
+    const { status } = req.body;
+
+    try {
+      const orderRef = admin.firestore().collection("orders").doc(orderId);
+      await orderRef.update({ orderStatus: status });
+
+      console.log(`Order status changed to '${status}' successfully.`);
+      return res
+        .status(200)
+        .json({ message: `Order status changed to '${status}' successfully.` });
+    } catch (error) {
+      console.error("Error changing order status:", error);
       return res.status(500).json({ message: "Internal server error." });
     }
   }
@@ -83,19 +102,16 @@ class OrderController {
     }
   }
 
-  async fetchOrdersOfProvider(req, res) {
-    const providerId = req.params.providerId;
+  async fetchPlacedOrdersOfProvider(req, res) {
+    const userId = req.params.providerId;
+    const orderStatus = "placed";
+
     try {
       const ordersRef = admin.firestore().collection("orders");
       const querySnapshot = await ordersRef
-        .where("providerId", "==", providerId)
+        .where("providerId", "==", userId)
+        .where("orderStatus", "==", orderStatus)
         .get();
-
-      if (querySnapshot.empty) {
-        return res
-          .status(404)
-          .json({ message: "No orders found for the user." });
-      }
 
       const orders = [];
       querySnapshot.forEach((doc) => {
@@ -105,10 +121,85 @@ class OrderController {
 
       return res.status(200).json(orders);
     } catch (error) {
-      console.error("Error fetching orders:", error);
+      console.error("Error fetching placed orders:", error);
       return res.status(500).json({ message: "Internal server error." });
     }
   }
+
+  async fetchPreparedOrdersOfProvider(req, res) {
+    const userId = req.params.providerId;
+    const orderStatus = "prepared";
+
+    try {
+      const ordersRef = admin.firestore().collection("orders");
+      const querySnapshot = await ordersRef
+        .where("providerId", "==", userId)
+        .where("orderStatus", "==", orderStatus)
+        .get();
+
+      const orders = [];
+      querySnapshot.forEach((doc) => {
+        const orderData = doc.data();
+        orders.push(orderData);
+      });
+
+      return res.status(200).json(orders);
+    } catch (error) {
+      console.error("Error fetching prepared orders:", error);
+      return res.status(500).json({ message: "Internal server error." });
+    }
+  }
+
+  async fetchResolvedOrdersOfProvider(req, res) {
+    const userId = req.params.providerId;
+    const orderStatus = "resolved";
+
+    try {
+      const ordersRef = admin.firestore().collection("orders");
+      const querySnapshot = await ordersRef
+        .where("providerId", "==", userId)
+        .where("orderStatus", "==", orderStatus)
+        .get();
+
+      const orders = [];
+      querySnapshot.forEach((doc) => {
+        const orderData = doc.data();
+        orders.push(orderData);
+      });
+
+      return res.status(200).json(orders);
+    } catch (error) {
+      console.error("Error fetching resolved orders:", error);
+      return res.status(500).json({ message: "Internal server error." });
+    }
+  }
+
+  // async fetchOrdersOfProvider(req, res) {
+  //   const providerId = req.params.providerId;
+  //   try {
+  //     const ordersRef = admin.firestore().collection("orders");
+  //     const querySnapshot = await ordersRef
+  //       .where("providerId", "==", providerId)
+  //       .get();
+
+  //     if (querySnapshot.empty) {
+  //       return res
+  //         .status(404)
+  //         .json({ message: "No orders found for the user." });
+  //     }
+
+  //     const orders = [];
+  //     querySnapshot.forEach((doc) => {
+  //       const orderData = doc.data();
+  //       orders.push(orderData);
+  //     });
+
+  //     return res.status(200).json(orders);
+  //   } catch (error) {
+  //     console.error("Error fetching orders:", error);
+  //     return res.status(500).json({ message: "Internal server error." });
+  //   }
+  // }
 
   async updateProviderDataInOrder(messageContent) {
     try {

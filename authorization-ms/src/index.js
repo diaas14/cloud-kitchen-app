@@ -29,10 +29,6 @@ async function verifyToken(idToken, projectId) {
   }
 }
 
-app.get("/", async (req, res) => {
-  res.send("Authorization service reachable");
-});
-
 app.get("/api/*", async (req, res) => {
   try {
     console.log("Request received");
@@ -66,6 +62,10 @@ app.get("/api/*", async (req, res) => {
     console.log("Unexpected error:", error);
     res.status(500).send({ message: "Unexpected error" });
   }
+});
+
+app.get("/", async (req, res) => {
+  res.send("Authorization Microservice is Reachable.");
 });
 
 // Start the server

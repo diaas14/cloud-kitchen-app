@@ -25,6 +25,10 @@ admin.initializeApp({
 
 app.use("/api/orders", ordersRoute);
 
+app.get("/", async (req, res) => {
+  res.send("Orders Microservice is Reachable.");
+});
+
 rabbitmq
   .connect()
   .then(() => {

@@ -34,10 +34,10 @@ class MenuController {
   }
 
   async addItemToMenu(req, res) {
-    console.log(req.body);
-    const userId = req.params.userId;
+    console.log("Received by addItemToMenu");
     try {
       const {
+        userId,
         itemName = null,
         itemDescription = null,
         itemPrice = null,
@@ -109,8 +109,10 @@ class MenuController {
   }
 
   async editMenuItem(req, res) {
+    console.log("Received by editMenuItem");
     try {
       const itemId = req.params.itemId;
+      console.log(itemId);
 
       const {
         itemName = null,
@@ -142,7 +144,7 @@ class MenuController {
         ...(itemQuantity && { itemQuantity: parseInt(itemQuantity) }),
       };
 
-      await itemRef.update(updatedFields);
+      await itemDoc.ref.update(updatedFields);
 
       res
         .status(200)
@@ -230,6 +232,30 @@ class MenuController {
       res
         .status(500)
         .json({ success: false, message: "Error fetching Food Providers." });
+    }
+  }
+
+  async deleteMenuItem(req, res) {
+    try {
+      const itemId = req.params.itemId;
+
+      const menuRef = admin.firestore().collection("menu");
+      const itemDoc = await menuRef.doc(itemId).get();
+
+      if (!itemDoc.exists) {
+        return res.status(404).json({ msg: "Item not found" });
+      }
+
+      await menuRef.doc(itemId).delete();
+      res
+        .status(200)
+        .json({ success: true, message: "Item deleted from menu collection" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({
+        success: false,
+        message: "Error deleting item from menu collection",
+      });
     }
   }
 }

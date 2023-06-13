@@ -28,6 +28,10 @@ admin.initializeApp({
 app.use("/api/business-profile", businessProfileRoute);
 app.use("/api/business-profile/menu", menuRoute);
 
+app.get("/", (req, res) => {
+  res.status(200).send("Business Profile Microservice is Reachable.");
+});
+
 rabbitmq
   .connect()
   .then(() => {

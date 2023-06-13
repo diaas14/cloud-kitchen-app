@@ -59,14 +59,12 @@ class BusinessProfileController {
   }
 
   async updateProfile(req, res) {
-    console.log(req.body);
     const userId = req.params.userId;
     const {
       businessName = null,
       locationData = null,
       address = null,
     } = req.body;
-    console.log(req.params.userId);
 
     try {
       const userDocRef = admin.firestore().collection("businesses").doc(userId);

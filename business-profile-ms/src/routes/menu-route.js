@@ -7,7 +7,7 @@ const menuController = new MenuController();
 
 router.get("/:userId", menuController.getMenuItems);
 
-router.post("/:userId", menuController.addItemToMenu.bind(menuController));
+router.post("/", menuController.addItemToMenu.bind(menuController));
 
 router.put("/:itemId", menuController.editMenuItem.bind(menuController));
 
@@ -25,5 +25,7 @@ router.get(
   "/category/:categoryId",
   menuController.fetchMenuItemsByCategory.bind(menuController)
 );
+
+router.delete("/:itemId", menuController.deleteMenuItem.bind(menuController));
 
 module.exports = router;

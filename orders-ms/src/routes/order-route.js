@@ -13,8 +13,26 @@ router.get(
 );
 
 router.get(
-  "/provider/:providerId",
-  orderController.fetchOrdersOfProvider.bind(orderController)
+  "/provider/placed/:providerId",
+  orderController.fetchPlacedOrdersOfProvider.bind(orderController)
 );
+router.get(
+  "/provider/prepared/:providerId",
+  orderController.fetchPreparedOrdersOfProvider.bind(orderController)
+);
+router.get(
+  "/provider/resolved/:providerId",
+  orderController.fetchResolvedOrdersOfProvider.bind(orderController)
+);
+
+router.put(
+  "/status/:orderId",
+  orderController.changeOrderStatus.bind(orderController)
+);
+
+// router.get(
+//   "/provider/:providerId",
+//   orderController.fetchOrdersOfProvider.bind(orderController)
+// );
 
 module.exports = router;

@@ -26,6 +26,10 @@ admin.initializeApp({
 
 app.use("/api/profile", usersRoute);
 
+app.get("/", async (req, res) => {
+  res.send("Profile Microservice is Reachable.");
+});
+
 rabbitmq
   .connect()
   .then(() => {
