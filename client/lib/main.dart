@@ -6,9 +6,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 import 'package:client/models/cartModel.dart';
 import 'package:client/models/user.dart';
+import 'package:client/services/location_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,6 +31,9 @@ Future<void> main() async {
   final userProvider = UserProvider();
   await userProvider.loadUserData();
 
+  final currentPosition = await determinePosition();
+  savePositionDataToStorage(currentPosition);
+
   runApp(
     MultiProvider(
       providers: [
@@ -41,6 +47,12 @@ Future<void> main() async {
       child: MyApp(),
     ),
   );
+}
+
+void savePositionDataToStorage(Position position) async {
+  final sharedPreferences = await SharedPreferences.getInstance();
+  sharedPreferences.setDouble('currentLatitude', position.latitude);
+  sharedPreferences.setDouble('currentLongitude', position.longitude);
 }
 
 class MyApp extends StatelessWidget {
@@ -70,12 +82,11 @@ class MyApp extends StatelessWidget {
           }
           if (snapshot.connectionState == ConnectionState.active) {
             if (snapshot.data != null) {
-                return EmailVerification();
-              }
-              else {
-                return Auth();
-              }
-            } 
+              return EmailVerification();
+            } else {
+              return Auth();
+            }
+          }
           return CircularProgressIndicator();
         },
       ),

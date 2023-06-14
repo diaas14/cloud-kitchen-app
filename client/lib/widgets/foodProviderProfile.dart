@@ -1,4 +1,7 @@
+import 'package:client/services/location_service.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class FoodProviderProfile extends StatefulWidget {
   final Map<String, dynamic> profile;
@@ -9,6 +12,36 @@ class FoodProviderProfile extends StatefulWidget {
 }
 
 class _FoodProviderProfileState extends State<FoodProviderProfile> {
+  Position? currentPosition;
+  double? distance;
+
+  @override
+  void initState() {
+    super.initState();
+    retrieveCurrentAddress();
+  }
+
+  void retrieveCurrentAddress() async {
+    final pos = await retrievePositionDataFromStorage();
+    if (pos != null) {
+      final providerLocation = widget.profile['location'];
+      final double providerLatitude = providerLocation['_latitude'];
+      final double providerLongitude = providerLocation['_longitude'];
+      final double currentLatitude = pos.latitude;
+      final double currentLongitude = pos.longitude;
+      final double calculatedDistance = calculateDistance(
+        providerLatitude,
+        providerLongitude,
+        currentLatitude,
+        currentLongitude,
+      );
+      setState(() {
+        currentPosition = pos;
+        distance = calculatedDistance;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     print(widget.profile);
@@ -62,6 +95,15 @@ class _FoodProviderProfileState extends State<FoodProviderProfile> {
                 ),
               ),
             ],
+          ),
+          SizedBox(height: 8.0),
+          Text(
+            '${distance?.toStringAsFixed(2)} kms away',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+              color: Color.fromARGB(255, 218, 241, 230),
+            ),
           ),
         ],
       ),
